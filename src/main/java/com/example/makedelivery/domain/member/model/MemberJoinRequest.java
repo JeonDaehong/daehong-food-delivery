@@ -1,12 +1,8 @@
 package com.example.makedelivery.domain.member.model;
 
-import com.example.makedelivery.common.annotation.LoginCheck;
 import com.example.makedelivery.common.annotation.LoginCheck.MemberLevel;
 import com.example.makedelivery.domain.member.model.entity.Member;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -29,6 +25,7 @@ public class MemberJoinRequest {
     private String password;
 
     @NotEmpty(message = "닉네임은 공란일 수 없습니다.")
+    @Size(min = 2, max = 30, message = "닉네임은 최소 2자 이상, 최대 30자 이하여야 합니다.")
     private String nickname;
 
     @NotNull

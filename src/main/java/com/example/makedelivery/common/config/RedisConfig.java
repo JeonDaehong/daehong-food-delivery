@@ -1,6 +1,7 @@
 package com.example.makedelivery.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -14,6 +15,7 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 import java.time.Duration;
 
@@ -40,114 +42,63 @@ import java.time.Duration;
  * 데이터를 꺼내올 때 그 클래스타입으로만 가져올 수 있습니다.
  */
 @Configuration
+@EnableRedisHttpSession
 public class RedisConfig {
 
     @Value("${spring.data.redis.host}")
-    private String redisHost;
+    private String host;
 
-    @Value("${spring.data.redis.session.port}")
-    private int redisSessionPort;
-
-    @Value("${spring.data.redis.cache.port}")
-    private int redisCachePort;
-
-    @Value("${spring.data.redis.cart.port}")
-    private int redisCartPort;
-
-    @Value("${spring.data.redis.rider.port}")
-    private int redisDeliveryPort;
+    @Value("${spring.data.redis.port}")
+    private int port;
 
     @Value("${spring.data.redis.password}")
-    private String redisPassword;
+    private String password;
 
     @Bean
-    public RedisConnectionFactory redisSessionConnectionFactory() {
-
+    public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration();
-        redisConfiguration.setHostName(redisHost);
-        redisConfiguration.setPort(redisSessionPort);
-        redisConfiguration.setPassword(redisPassword);
-
+        redisConfiguration.setHostName(host);
+        redisConfiguration.setPort(port);
+        redisConfiguration.setPassword(password);
         return new LettuceConnectionFactory(redisConfiguration);
     }
 
+    /**
+     * 일반적인 레디스 저장소로 사용할 템플릿 메서드
+     */
     @Bean
-    public RedisConnectionFactory redisCacheConnectionFactory() {
-
-        RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration();
-        redisConfiguration.setHostName(redisHost);
-        redisConfiguration.setPort(redisCachePort);
-        redisConfiguration.setPassword(redisPassword);
-
-        return new LettuceConnectionFactory(redisConfiguration);
+    public RedisTemplate<?, ?> redisTemplate() {
+        RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        return redisTemplate;
     }
 
-    @Bean
-    public RedisConnectionFactory redisCartConnectionFactory() {
-
-        RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration();
-        redisConfiguration.setHostName(redisHost);
-        redisConfiguration.setPort(redisCartPort);
-        redisConfiguration.setPassword(redisPassword);
-
-        return new LettuceConnectionFactory(redisConfiguration);
-    }
-
-    @Bean
-    public RedisConnectionFactory redisDeliveryConnectionFactory() {
-
-        RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration();
-        redisConfiguration.setHostName(redisHost);
-        redisConfiguration.setPort(redisDeliveryPort);
-        redisConfiguration.setPassword(redisPassword);
-
-        return new LettuceConnectionFactory(redisConfiguration);
-    }
-
+    /**
+     * Redis에 저장된 Spring Session의 객체를 직렬화하고 역직렬화하기 위한 Serializer 설정.
+     */
     @Bean
     public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
         return new GenericJackson2JsonRedisSerializer();
     }
 
-
-    @Bean("redisTemplate")
-    public RedisTemplate<String, Object> deliveryRedisTemplate() {
-        GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer =
-                new GenericJackson2JsonRedisSerializer();
-
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-
-        redisTemplate.setConnectionFactory(redisDeliveryConnectionFactory());
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(genericJackson2JsonRedisSerializer);
-        redisTemplate.setHashValueSerializer(genericJackson2JsonRedisSerializer);
-
-        return redisTemplate;
-    }
-
+    /**
+     * Redis를 캐시로 사용하기 위한 CacheManager 빈 생성
+     */
     @Bean
     public RedisCacheManager redisCacheManager() {
-
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration
-                .defaultCacheConfig() // 기본적인 캐시 설정을 사용
-                .disableCachingNullValues() // Null Caching x
-                .serializeKeysWith(
-                        RedisSerializationContext.SerializationPair
-                                .fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(
-                        RedisSerializationContext.SerializationPair
-                                .fromSerializer(new GenericJackson2JsonRedisSerializer())
-                )
-                .entryTtl(Duration.ofDays(1L)); // Cache 설정 기간 : 1일
-
-        return RedisCacheManager.RedisCacheManagerBuilder
-                .fromConnectionFactory(redisCacheConnectionFactory())
-                .cacheDefaults(redisCacheConfiguration)
-                .build();
+        RedisCacheManager.RedisCacheManagerBuilder builder = RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory());
+        RedisCacheConfiguration redisCacheConfiguration  = RedisCacheConfiguration.defaultCacheConfig()
+                // Redis 의 Key 와 Value 의 직렬화 방식 설정
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+                .prefixCacheNameWith("cache:") // Key 의 접두사로 "cache:"를 앞에 붙여 저장
+                .entryTtl(Duration.ofMinutes(30)); // 캐시 수명(유효기간)을 30분으로 설정
+        builder.cacheDefaults(redisCacheConfiguration);
+        return builder.build(); // cacheDefaults 를 설정하여 만든 RedisCacheManager 반환
     }
-
-
-
 
 }
