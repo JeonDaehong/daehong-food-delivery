@@ -27,6 +27,7 @@ import static com.example.makedelivery.common.util.URIConstants.*;
 public class MemberInfoController {
 
     private final MemberService memberService;
+    private final LoginService loginService;
 
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     @GetMapping("/profile")
@@ -44,8 +45,17 @@ public class MemberInfoController {
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     @PatchMapping("/update/password")
     public ResponseEntity<HttpStatus> updateMemberPassword(@CurrentMember Member member, @RequestBody @Valid MemberPasswordRequest request) {
-        if ( !memberService.isValidPassword(member, request) ) return RESPONSE_BAD_REQUEST;
+        if (memberService.isValidPassword(member, request.getOldPassword())) return RESPONSE_BAD_REQUEST;
         memberService.updateMemberPassword(member, request);
+        return RESPONSE_OK;
+    }
+
+    @LoginCheck(memberLevel = MemberLevel.MEMBER)
+    @DeleteMapping("/delete")
+    public ResponseEntity<HttpStatus> updateMemberPassword(@CurrentMember Member member, @RequestParam String inputPassword) {
+        if (memberService.isValidPassword(member, inputPassword)) return RESPONSE_BAD_REQUEST;
+        memberService.deleteMember(member);
+        loginService.logoutMember();
         return RESPONSE_OK;
     }
 

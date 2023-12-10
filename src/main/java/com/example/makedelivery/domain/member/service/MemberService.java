@@ -34,7 +34,7 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public boolean existsByEmail(final String email) {
+    public boolean existsByEmail(String email) {
         try {
             if ( memberRepository.existsByEmail(email) ) throw new DuplicatedEmailException();
         } catch ( DuplicatedEmailException e ) {
@@ -44,15 +44,15 @@ public class MemberService {
         return false;
     }
 
-    public Member findMemberByEmail(final String email) {
+    public Member findMemberByEmail(String email) {
         return memberRepository.findMemberByEmail(email).orElseThrow(MemberNotFoundException::new);
     }
 
-    public Member findMemberById(final Long id) {
+    public Member findMemberById(Long id) {
         return memberRepository.findMemberById(id).orElseThrow(MemberNotFoundException::new);
     }
 
-    public boolean isValidMember(final LoginRequest request) {
+    public boolean isValidMember(LoginRequest request) {
         Optional<Member> memberOptional = memberRepository.findMemberByEmail(request.getEmail());
         if (memberOptional.isPresent()) {
             Member member = memberOptional.get();
@@ -61,24 +61,35 @@ public class MemberService {
         return false;
     }
 
-    public boolean isValidPassword(Member member, MemberPasswordRequest passwordRequest) {
+    public boolean isValidPassword(Member member, String inputPassword) {
         try {
-            if ( passwordEncoder.matches(passwordRequest.getOldPassword(), member.getPassword()) ) return true;
+            if ( passwordEncoder.matches(inputPassword, member.getPassword()) ) return false;
             throw new PasswordNotMatchedException();
         } catch ( DuplicatedEmailException e ) {
             log.info(e.getMessage());
-            return false;
+            return true;
         }
     }
 
     @Transactional
-    public void updateMemberProfile(final Member member, MemberProfileRequest request) {
+    public void updateMemberProfile(Member member, MemberProfileRequest request) {
         member.updateProfile(request.getNickname());
     }
 
     @Transactional
     public void updateMemberPassword(Member member, MemberPasswordRequest passwordRequest) {
         member.updatePassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
+    }
+
+    /**
+     * 실제 현업이라면,
+     * DB 에서 테이블 별로 묶여있는 외래키를 고려하여 DEL_YN 과 같은 컬럼을 활용하여
+     * 해당 회원이 탈퇴하여도, 엮어있는 다른 테이블에 문제가 생기지 않게 하거나,
+     * CASCADE 를 활용하여 연쇄 삭제를 해야하는 등의 설계 & 구현을 해야합니다.
+     */
+    @Transactional
+    public void deleteMember(Member member) {
+        memberRepository.deleteMemberById(member.getId());
     }
 
 }
