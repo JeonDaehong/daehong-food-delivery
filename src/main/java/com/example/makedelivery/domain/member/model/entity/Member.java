@@ -6,6 +6,21 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entity 에 NoArgsConstructor 로 기본 생성자를 생성해주는 이유는
+ * JPA에서 런타임 시점에 기본생성자를 통해 클래스를 인스턴스화 하여 값을 동적으로 패밍하기 떄문입니다.
+ * 그래서 Entity에서 기본 생성자는 반드시 존재해야합니다.
+ * 또한 NoArgsConstructor(access = AccessLevel.PROTECTED) 어노테이션의 뜻은
+ * "아무런 매개변수가 없는 생성자를 생성하되 다른 패키지에 소속된 클래스는 접근을 불허한다." 입니다.
+ * 즉, 아래와 같은 코드를 생성해 준다는 의미입니다.
+ * protected Post() { }
+ * 접근 권한을 Protected 로 하는 이유는,
+ * public 을 사용할 시 Entity 를 무분별하게 수정할 수 없게 하기 위함과
+ * private 사용시 Entity의 Proxy 조회 문제가 발생하기 때문입니다.
+ * JPA에서는 Lazy 지연 로딩 방식을 권장하는데 이 때 객체가 Proxy 객체로 존재합니다.
+ * 근데 Proxy 객체는 기존 Entity class를 상속 받아 만들어지므로, private 생성자면 상속받아 가져올 수가 없습니다.
+ *
+ */
 @Entity
 @Getter
 @ToString
@@ -31,6 +46,13 @@ public class Member {
     @Enumerated(value = EnumType.STRING)
     private MemberLevel memberLevel;
 
+    @Column(name = "STATUS")
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
+
+    @Column(name = "MAIN_ADDRESS_ID")
+    private Long mainAddressId;
+
     @Column(name = "CRTE_DTTM")
     private LocalDateTime createDateTime;
 
@@ -38,21 +60,47 @@ public class Member {
     private LocalDateTime updateDateTime;
 
 
+    @Getter
+    @RequiredArgsConstructor
+    public enum Status {
+        DEFAULT("정상"),
+        STOPPED("정지"),
+        DELETED("삭제");
+
+        private final String description;
+    }
+
+
     @Builder
-    public Member(String email, String password, String nickname, MemberLevel memberLevel, LocalDateTime createDateTime, LocalDateTime updateDateTime) {
+    public Member(String email, String password, String nickname, MemberLevel memberLevel, Status status,
+                  Long mainAddressId, LocalDateTime createDateTime, LocalDateTime updateDateTime) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.memberLevel = memberLevel;
+        this.status = status;
+        this.mainAddressId = mainAddressId;
         this.createDateTime = createDateTime;
         this.updateDateTime = updateDateTime;
     }
 
-    public void updateProfile(String nickname) {
+    public void updateProfile(String nickname, LocalDateTime updateDateTime) {
         this.nickname = nickname;
+        this.updateDateTime = updateDateTime;
     }
 
-    public void updatePassword(String password) {
+    public void updatePassword(String password, LocalDateTime updateDateTime) {
         this.password = password;
+        this.updateDateTime = updateDateTime;
+    }
+
+    public void updateMainAddress(Long addressId, LocalDateTime updateDateTime) {
+        this.mainAddressId = addressId;
+        this.updateDateTime = updateDateTime;
+    }
+
+    public void deleteMemberStatus(LocalDateTime updateDateTime) {
+        this.status = Status.DELETED;
+        this.updateDateTime = updateDateTime;
     }
 }
