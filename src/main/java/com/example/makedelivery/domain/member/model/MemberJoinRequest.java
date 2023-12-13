@@ -2,6 +2,7 @@ package com.example.makedelivery.domain.member.model;
 
 import com.example.makedelivery.common.annotation.LoginCheck.MemberLevel;
 import com.example.makedelivery.domain.member.model.entity.Member;
+import com.example.makedelivery.domain.member.model.entity.Member.Status;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,6 +38,7 @@ public class MemberJoinRequest {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
                 .memberLevel(request.memberLevel)
+                .status(Status.DEFAULT)
                 .createDateTime(LocalDateTime.now())
                 .updateDateTime(LocalDateTime.now())
                 .build();
