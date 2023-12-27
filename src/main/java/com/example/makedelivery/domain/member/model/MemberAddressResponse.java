@@ -6,8 +6,6 @@ import lombok.*;
 
 @Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class MemberAddressResponse {
 
     private String address;

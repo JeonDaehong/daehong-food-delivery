@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 
 @Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class MenuGroupRequest {
 
     @NotEmpty(message = "그룹 이름은 공란일 수 없습니다.")

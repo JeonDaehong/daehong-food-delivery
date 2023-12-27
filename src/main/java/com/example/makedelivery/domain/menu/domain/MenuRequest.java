@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 
 @Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class MenuRequest {
 
     @NotEmpty(message = "메뉴 이름은 공란일 수 없습니다.")

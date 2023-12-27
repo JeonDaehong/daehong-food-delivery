@@ -10,8 +10,6 @@ import lombok.*;
 
 @Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class StoreResponse {
 
     private Long id;

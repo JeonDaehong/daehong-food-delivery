@@ -6,15 +6,12 @@ import lombok.*;
 
 @Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class MenuResponse {
 
     private Long id;
     private String name;
     private Integer price;
     private String description;
-    private Long storeId;
     private String imageFileName;
 
     public static MenuResponse toMenuResponse(Menu menu) {
