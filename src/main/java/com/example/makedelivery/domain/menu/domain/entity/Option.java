@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @ToString
-@Table(name = "TB_MENU")
+@Table(name = "TB_OPTN")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Menu {
+public class Option {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MENU_ID")
+    @Column(name = "OPTN_ID")
     private Long id;
 
     @Column(name = "NAME")
@@ -23,18 +23,12 @@ public class Menu {
     @Column(name = "PRICE")
     private Integer price;
 
-    @Column(name = "DESCRIPTION")
-    private String description;
-
-    @Column(name = "MENU_GROUP_ID")
-    private Long menuGroupId;
+    @Column(name = "MENU_ID")
+    private Long menuId;
 
     @Column(name = "STATUS")
     @Enumerated(value = EnumType.STRING)
     private Status status;
-
-    @Column(name = "IMG_FILE_NAME")
-    private String imageFileName;
 
     @Column(name = "CRTE_DTTM")
     private LocalDateTime createDateTime;
@@ -53,27 +47,23 @@ public class Menu {
     }
 
     @Builder
-    public Menu(String name, Integer price, String description, Long menuGroupId, String imageFileName, Integer priority,
-                Status status, LocalDateTime createDateTime, LocalDateTime updateDateTime) {
+    public Option(String name, Integer price, Long menuId,
+                  Status status, LocalDateTime createDateTime, LocalDateTime updateDateTime) {
         this.name = name;
         this.price = price;
-        this.description = description;
-        this.menuGroupId = menuGroupId;
+        this.menuId = menuId;
         this.status = status;
-        this.imageFileName = imageFileName;
         this.createDateTime = createDateTime;
         this.updateDateTime = updateDateTime;
     }
 
     /**
-     * 해당 메뉴가 속한 메뉴 그룹의 변경이 가능합니다.
+     * 메뉴 정보 안에서 옵션을 생성하거나 수정하므로,
+     * 해당 옵션에 대한 메뉴( MENU_ID ) 는 변경 할 수 없습니다.
      */
-    public void updateMenuInfo(String name, String description, Integer price, Long menuGroupId, String imageFileName, LocalDateTime updateDateTime) {
+    public void updateOptionInfo(String name, Integer price, LocalDateTime updateDateTime) {
         this.name = name;
-        this.description = description;
         this.price = price;
-        this.menuGroupId = menuGroupId;
-        this.imageFileName = imageFileName;
         this.updateDateTime = updateDateTime;
     }
 

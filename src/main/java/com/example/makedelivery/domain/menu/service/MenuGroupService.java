@@ -1,6 +1,6 @@
 package com.example.makedelivery.domain.menu.service;
 
-import com.example.makedelivery.common.exception.MenuGroupDeletionException;
+import com.example.makedelivery.common.exception.ApiException;
 import com.example.makedelivery.domain.menu.domain.MenuGroupRequest;
 import com.example.makedelivery.domain.menu.domain.entity.Menu;
 import com.example.makedelivery.domain.menu.domain.entity.MenuGroup;
@@ -12,9 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
-import java.util.Optional;
+
+import static com.example.makedelivery.common.exception.ExceptionEnum.*;
 
 @Service
 @Slf4j
@@ -32,24 +32,24 @@ public class MenuGroupService {
 
     @Transactional
     public void updateMenuGroupInformation(Long menuGroupId, MenuGroupRequest request) {
-        Optional<MenuGroup> menuGroupOptional = menuGroupRepository.findMenuGroupByIdAndStatus(menuGroupId, Status.DEFAULT);
-        if ( menuGroupOptional.isPresent() ) {
-            MenuGroup menuGroup = menuGroupOptional.get();
-            menuGroup.updateMenuGroup(request.getName(), LocalDateTime.now());
-        }
+
+        MenuGroup menuGroup = menuGroupRepository
+                .findMenuGroupByIdAndStatus(menuGroupId, Status.DEFAULT)
+                .orElseThrow(() -> new ApiException(MENU_GROUP_NOT_FOUND));
+
+        menuGroup.updateMenuGroup(request.getName(), LocalDateTime.now());
     }
 
     @Transactional
-    public boolean deleteMenuGroup(Long menuGroupId) {
-        try {
-            int menuCount = menuRepository.countAllByMenuGroupIdAndStatusNot(menuGroupId, Menu.Status.DELETED);
-            // 해당 그룹에 정상적인 메뉴가 하나라도 있으면, 삭제할 수 없습니다.
-            if ( menuCount > 0 ) throw new MenuGroupDeletionException();
-            return true;
-        } catch ( MenuGroupDeletionException e ) {
-            log.info("메뉴 그룹 ID : " + menuGroupId + " , " + e.getMessage());
-            return false;
-        }
+    public void deleteMenuGroup(Long menuGroupId) {
+        // 해당 그룹에 정상적인 메뉴가 하나라도 있으면, 삭제할 수 없습니다.
+        int menuCount = menuRepository.countAllByMenuGroupIdAndStatusNot(menuGroupId, Menu.Status.DELETED);
+        if ( menuCount > 0 ) throw new ApiException(MENU_GROUP_DELETE);
+
+        MenuGroup menuGroup = menuGroupRepository.findMenuGroupByIdAndStatus(menuGroupId, Status.DEFAULT)
+                .orElseThrow(() -> new ApiException(MENU_GROUP_NOT_FOUND));
+
+        menuGroup.deleteMenuGroup(LocalDateTime.now());
     }
 
     /**

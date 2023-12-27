@@ -5,8 +5,6 @@ import lombok.*;
 
 @Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class MemberProfileResponse {
 
     private String email;

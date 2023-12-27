@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class StoreInsertRequest {
 
     @NotEmpty(message = "매장명은 공란일 수 없습니다.")

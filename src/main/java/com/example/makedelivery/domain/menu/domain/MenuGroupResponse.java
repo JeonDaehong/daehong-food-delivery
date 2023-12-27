@@ -13,8 +13,6 @@ import java.util.List;
 
 @Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class MenuGroupResponse {
 
     private Long id;

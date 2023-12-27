@@ -10,8 +10,6 @@ import lombok.*;
 
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class LoginRequest {
 
     @NotEmpty(message = "이메일은 공란일 수 없습니다.")

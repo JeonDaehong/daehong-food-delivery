@@ -17,8 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.example.makedelivery.common.util.HttpStatusResponseConstants.*;
-import static com.example.makedelivery.common.util.URIConstants.*;
+import static com.example.makedelivery.common.constants.URIConstants.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,22 +29,22 @@ public class StoreController {
 
     @PostMapping("/insert")
     @LoginCheck(memberLevel = MemberLevel.OWNER)
-    public ResponseEntity<HttpStatus> addStore(@RequestParam @Valid StoreInsertRequest request, @CurrentMember Member member) {
-        if ( !storeService.addStore(request, member) ) return RESPONSE_CONFLICT;
-        return RESPONSE_OK;
+    public ResponseEntity<HttpStatus> addStore(@RequestBody @Valid StoreInsertRequest request, @CurrentMember Member member)  {
+        storeService.addStore(request, member);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping
     @LoginCheck(memberLevel = MemberLevel.OWNER)
     public ResponseEntity<List<StoreResponse>> getMyAllStore(@CurrentMember Member member) {
-        return ResponseEntity.ok(storeService.getMyAllStore(member));
+        return ResponseEntity.status(HttpStatus.OK).body(storeService.getMyAllStore(member));
     }
 
     @GetMapping("/{storeId}")
     @LoginCheck(memberLevel = MemberLevel.OWNER)
     public ResponseEntity<StoreResponse> getMyStore(@CurrentMember Member member, @PathVariable Long storeId) {
         storeService.validationCheckedMyStore(storeId, member); // 내 매장이 맞는지 Check
-        return ResponseEntity.ok(storeService.getMyStore(storeId, member));
+        return ResponseEntity.status(HttpStatus.OK).body(storeService.getMyStore(storeId, member));
     }
 
     @PatchMapping("/{storeId}/opened")
@@ -53,7 +52,7 @@ public class StoreController {
     public ResponseEntity<HttpStatus> openMyStore(@CurrentMember Member member, @PathVariable Long storeId) {
         storeService.validationCheckedMyStore(storeId, member);
         storeService.openMyStore(storeId, member);
-        return RESPONSE_OK;
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PatchMapping("/{storeId}/closed")
@@ -61,25 +60,25 @@ public class StoreController {
     public ResponseEntity<HttpStatus> closeMyStore(@CurrentMember Member member, @PathVariable Long storeId) {
         storeService.validationCheckedMyStore(storeId, member);
         storeService.closeMyStore(storeId, member);
-        return RESPONSE_OK;
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PatchMapping("/{storeId}/updateInfo")
+    @PatchMapping("/{storeId}")
     @LoginCheck(memberLevel = MemberLevel.OWNER)
     public ResponseEntity<HttpStatus> updateStoreInformation(@CurrentMember Member member,
-                                                             @RequestParam @Valid StoreInfoUpdateRequest request,
+                                                             @RequestBody @Valid StoreInfoUpdateRequest request,
                                                              @PathVariable Long storeId) {
         storeService.validationCheckedMyStore(storeId, member);
         storeService.updateStoreInformation(storeId, request, member);
-        return RESPONSE_OK;
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @DeleteMapping("/{storeId}/delete")
+    @DeleteMapping("/{storeId}")
     @LoginCheck(memberLevel = MemberLevel.OWNER)
     public ResponseEntity<HttpStatus> deleteStore(@CurrentMember Member member, @PathVariable Long storeId) {
         storeService.validationCheckedMyStore(storeId, member);
         storeService.deleteStore(storeId, member);
-        return RESPONSE_OK;
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 

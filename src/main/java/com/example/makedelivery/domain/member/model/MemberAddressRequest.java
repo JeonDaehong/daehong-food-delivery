@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class MemberAddressRequest {
 
     @NotEmpty(message = "주소는 공란일 수 없습니다.")

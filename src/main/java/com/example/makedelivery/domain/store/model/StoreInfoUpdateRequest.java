@@ -8,8 +8,6 @@ import lombok.*;
 
 @Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class StoreInfoUpdateRequest {
 
     @NotEmpty(message = "매장명은 공란일 수 없습니다.")

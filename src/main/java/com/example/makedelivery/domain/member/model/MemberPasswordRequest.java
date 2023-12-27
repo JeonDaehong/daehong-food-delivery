@@ -6,8 +6,6 @@ import lombok.*;
 
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class MemberPasswordRequest {
 
     @NotEmpty(message = "패스워드는 공란일 수 없습니다.")

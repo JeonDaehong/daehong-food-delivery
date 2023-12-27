@@ -6,8 +6,6 @@ import lombok.*;
 
 @Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class MemberProfileRequest {
 
     @NotEmpty(message = "닉네임은 공란일 수 없습니다.")

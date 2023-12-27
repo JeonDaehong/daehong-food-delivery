@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class MemberJoinRequest {
 
     @NotEmpty(message = "이메일은 공란일 수 없습니다.")

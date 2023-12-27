@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Table(name = "TB_STORE_CATEGORY")
+@Table(name = "TB_CATEGORY")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StoreCategory {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
