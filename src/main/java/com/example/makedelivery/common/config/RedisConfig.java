@@ -87,18 +87,33 @@ public class RedisConfig {
 
     /**
      * Redis를 캐시로 사용하기 위한 CacheManager 빈 생성
+     * gradle에서 starter-cache 의존성과 @EnableCaching을 통해 RedisCacheManager가 기본 설정으로 만들어지지만,
+     * 상세한 동작을 위해 구현하여 사용합니다. RedisCacheConfiguration으로 레디스 캐시 설정을 커스터마이징합니다.
+     *
+     * 캐시 추상화는 자바 메서드에 적용되어, 캐시에서 사용가능한 정보가 있다면 실행 횟수를 줄입니다.
+     * 대상 메서드가 호출될 때마다, 추상화는 메서드가 이미 해당 매개변수로 이미 호출되었는지 확인합니다.
+     * 만약에 호출되었다며느 캐시 결과는 실제 메서드 실행 없이 반환합니다.
+     * 만약, 메서드가 호출되지 않았다면, 실행이 되고 결과는 캐시에 저장합니다.
+     * 이 방법으로 연산이 많은 메서드를 매번 실행시킬 필요 없이 재사용하여 한번만 실행될 수 있도록 합니다.
      */
     @Bean
     public RedisCacheManager redisCacheManager() {
-        RedisCacheManager.RedisCacheManagerBuilder builder = RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory());
-        RedisCacheConfiguration redisCacheConfiguration  = RedisCacheConfiguration.defaultCacheConfig()
-                // Redis 의 Key 와 Value 의 직렬화 방식 설정
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-                .prefixCacheNameWith("cache:") // Key 의 접두사로 "cache:"를 앞에 붙여 저장
-                .entryTtl(Duration.ofMinutes(30)); // 캐시 수명(유효기간)을 30분으로 설정
-        builder.cacheDefaults(redisCacheConfiguration);
-        return builder.build(); // cacheDefaults 를 설정하여 만든 RedisCacheManager 반환
+        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration
+                .defaultCacheConfig()
+                .disableCachingNullValues()
+                .serializeKeysWith(
+                        RedisSerializationContext.SerializationPair
+                                .fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair
+                                .fromSerializer(new GenericJackson2JsonRedisSerializer())
+                )
+                .entryTtl(Duration.ofHours(1L)); // 캐시 유지시간 1시간
+
+        return RedisCacheManager.RedisCacheManagerBuilder
+                .fromConnectionFactory(redisConnectionFactory())
+                .cacheDefaults(redisCacheConfiguration)
+                .build();
     }
 
 }
