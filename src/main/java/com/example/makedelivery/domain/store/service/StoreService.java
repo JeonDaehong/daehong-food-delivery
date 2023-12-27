@@ -1,6 +1,6 @@
 package com.example.makedelivery.domain.store.service;
 
-import com.example.makedelivery.common.exception.DuplicateStoreNameException;
+import com.example.makedelivery.common.exception.ApiException;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.store.model.StoreInfoUpdateRequest;
 import com.example.makedelivery.domain.store.model.StoreInsertRequest;
@@ -10,18 +10,18 @@ import com.example.makedelivery.domain.store.model.entity.Store.Status;
 import com.example.makedelivery.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpStatus;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.client.HttpClientErrorException;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.example.makedelivery.common.exception.ExceptionEnum.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,93 +30,84 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
 
-    @Transactional
-    public boolean addStore(StoreInsertRequest request, Member member) {
-        try {
-            // 같은 이름의 매장은 등록할 수 없습니다.
-            if ( storeRepository.existsByName(request.getName()) ) throw new DuplicateStoreNameException(request.getName());
-            Store store = StoreInsertRequest.toEntity(request, member.getId());
-            storeRepository.save(store);
-            return true;
-        } catch ( DuplicateStoreNameException | DuplicateKeyException e ) {
-            log.info(e.getMessage());
-            return false;
-        }
+    private Store findMyStore(Long storeId, Member member) {
+        return storeRepository.findByIdAndOwnerIdAndStatus(storeId, member.getId(), Status.DEFAULT)
+                .orElseThrow(() -> new ApiException(STORE_NOT_FOUND));
     }
 
+    @Transactional
+    public void addStore(StoreInsertRequest request, Member member) {
+        // 같은 이름의 매장은 등록할 수 없습니다.
+        if ( storeRepository.existsByName(request.getName()) ) throw new ApiException(DUPLICATED_STORE_NAME);
+        Store store = StoreInsertRequest.toEntity(request, member.getId());
+        storeRepository.save(store);
+    }
+
+    @Transactional(readOnly = true)
     public void validationCheckedMyStore(Long storeId, Member member) {
         if ( !storeRepository.existsByIdAndOwnerIdAndStatus(storeId, member.getId(), Status.DEFAULT) ) {
-            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED); // 401
+            throw new ApiException(STORE_SECURITY_ERROR); // 401
         }
     }
 
+    @Transactional(readOnly = true)
     public List<StoreResponse> getMyAllStore(Member member) {
         // 상태가 정상인 매장을 이름 순으로 불러옵니다. ( 삭제 된 매장은 불러오지 않습니다. )
-        Optional<List<Store>> myStoreListOptional = storeRepository.findAllByOwnerIdAndStatusOrderByName(member.getId(), Status.DEFAULT);
-        if ( myStoreListOptional.isPresent() ) {
-            List<StoreResponse> storeResponseList = new ArrayList<>();
-            List<Store> myStoreList = myStoreListOptional.get();
-            for ( Store store : myStoreList ) {
-                StoreResponse storeResponse = StoreResponse.toStoreResponse(store);
-                storeResponseList.add(storeResponse);
-            }
-            return storeResponseList;
-        }
-        return null;
+        return storeRepository
+                .findAllByOwnerIdAndStatusOrderByName(member.getId(), Status.DEFAULT)
+                .orElse(List.of())
+                .stream()
+                .map(StoreResponse::toStoreResponse)
+                .toList();
     }
 
+    @Transactional(readOnly = true)
     public StoreResponse getMyStore(Long storeId, Member member) {
-        Optional<Store> myStoreOptional = storeRepository.findByIdAndOwnerIdAndStatus(storeId, member.getId(), Status.DEFAULT);
-        if ( myStoreOptional.isPresent() ) {
-            Store myStore = myStoreOptional.get();
-            return StoreResponse.toStoreResponse(myStore);
-        }
-        return null;
+        Store myStore = findMyStore(storeId, member);
+        return StoreResponse.toStoreResponse(myStore);
+
     }
 
     @Transactional
     public void openMyStore(Long storeId, Member member) {
-        Optional<Store> myStoreOptional = storeRepository.findByIdAndOwnerIdAndStatus(storeId, member.getId(), Status.DEFAULT);
-        if ( myStoreOptional.isPresent() ) {
-            Store myStore = myStoreOptional.get();
-            myStore.openStore(LocalDateTime.now());
-        }
+        Store myStore = findMyStore(storeId, member);
+        myStore.openStore(LocalDateTime.now());
     }
 
     @Transactional
     public void closeMyStore(Long storeId, Member member) {
-        Optional<Store> myStoreOptional = storeRepository.findByIdAndOwnerIdAndStatus(storeId, member.getId(), Status.DEFAULT);
-        if ( myStoreOptional.isPresent() ) {
-            Store myStore = myStoreOptional.get();
-            myStore.closeStore(LocalDateTime.now());
-        }
+        Store myStore = findMyStore(storeId, member);
+        myStore.closeStore(LocalDateTime.now());
     }
 
     @Transactional
     public void updateStoreInformation(Long storeId, StoreInfoUpdateRequest request, Member member) {
-        Optional<Store> myStoreOptional = storeRepository.findByIdAndOwnerIdAndStatus(storeId, member.getId(), Status.DEFAULT);
-        if ( myStoreOptional.isPresent() ) {
-            Store myStore = myStoreOptional.get();
-            myStore.updateStoreInfo(request.getName(),
-                                    request.getPhone(),
-                                    request.getAddress(),
-                                    request.getLongitude(),
-                                    request.getLatitude(),
-                                    request.getIntroduction(),
-                                    LocalDateTime.now());
-        }
+        Store myStore = findMyStore(storeId, member);
+        myStore.updateStoreInfo(request.getName(),
+                                request.getPhone(),
+                                request.getAddress(),
+                                request.getLongitude(),
+                                request.getLatitude(),
+                                request.getIntroduction(),
+                                LocalDateTime.now());
     }
 
     /**
      * 실제로 DB 에서 바로 삭제되지 않고,
      * Status 가 DEFAULT --> DELETED 로 변경됩니다.
+     * <br><br>
+     * 그리고 이 때 DB의 정보가 바뀌게 되므로,
+     * 고객들의 StoreList 관련 된 캐싱 정보를 모두 초기화 합니다.
      */
     @Transactional
+    @CacheEvict(value = "storeList", allEntries = true)
     public void deleteStore(Long storeId, Member member) {
-        Optional<Store> myStoreOptional = storeRepository.findByIdAndOwnerIdAndStatus(storeId, member.getId(), Status.DEFAULT);
-        if ( myStoreOptional.isPresent() ) {
-            Store myStore = myStoreOptional.get();
-            myStore.deleteStoreStatus(LocalDateTime.now());
-        }
+        Store myStore = findMyStore(storeId, member);
+        myStore.deleteStoreStatus(LocalDateTime.now());
+    }
+
+    @Transactional
+    public void deleteAllStoreDeleteStatus() {
+        storeRepository.deleteAllByStatus(Status.DELETED);
     }
 }
