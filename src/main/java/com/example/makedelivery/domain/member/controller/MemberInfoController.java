@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.example.makedelivery.common.util.HttpStatusResponseConstants.*;
-import static com.example.makedelivery.common.util.URIConstants.*;
+import static com.example.makedelivery.common.constants.URIConstants.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,56 +30,56 @@ public class MemberInfoController {
     @GetMapping("/profile")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     public ResponseEntity<MemberProfileResponse> getMemberInfoPage(@CurrentMember Member member) {
-        return ResponseEntity.ok(MemberProfileResponse.toMemberProfileResponse(member));
+        return ResponseEntity.status(HttpStatus.OK).body(MemberProfileResponse.toMemberProfileResponse(member));
     }
 
-    @PatchMapping("/update/profile")
+    @PatchMapping("/profile")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     public ResponseEntity<MemberProfileResponse> updateMemberProfile(@CurrentMember Member member, @RequestBody @Valid MemberProfileRequest request) {
         memberService.updateMemberProfile(member, request);
-        return ResponseEntity.ok(MemberProfileResponse.toMemberProfileResponse(member));
+        return ResponseEntity.status(HttpStatus.OK).body(MemberProfileResponse.toMemberProfileResponse(member));
     }
 
-    @PatchMapping("/update/password")
+    @PatchMapping("/password")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     public ResponseEntity<HttpStatus> updateMemberPassword(@CurrentMember Member member, @RequestBody @Valid MemberPasswordRequest request) {
-        if (memberService.isValidPassword(member, request.getOldPassword())) return RESPONSE_BAD_REQUEST;
+        memberService.isValidPassword(member, request.getOldPassword());
         memberService.updateMemberPassword(member, request);
-        return RESPONSE_OK;
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/profile")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     public ResponseEntity<HttpStatus> deleteMember(@CurrentMember Member member, @RequestParam String inputPassword) {
-        if (memberService.isValidPassword(member, inputPassword)) return RESPONSE_BAD_REQUEST;
+        memberService.isValidPassword(member, inputPassword);
         memberService.deleteMember(member);
         loginService.logoutMember();
-        return RESPONSE_OK;
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 
-    @PostMapping("/address/add")
+    @PostMapping("/address")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     public ResponseEntity<HttpStatus> addAddress(@CurrentMember Member member, @RequestBody @Valid MemberAddressRequest request) {
         memberService.addAddress(member, request);
-        return RESPONSE_OK;
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PostMapping("/address/delete/{addressId}")
+    @DeleteMapping("/address/{addressId}")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     public ResponseEntity<HttpStatus> deleteAddress(@CurrentMember Member member, @PathVariable Long addressId) {
-        if ( memberService.deleteAddress(member, addressId) ) return RESPONSE_OK;
-        return RESPONSE_CONFLICT;
+        memberService.deleteAddress(member, addressId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**
      * 해당 주소를 메인 주소로 지정합니다.
      */
-    @PostMapping("/address/{addressId}/change")
+    @PostMapping("/address/{addressId}")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     public ResponseEntity<HttpStatus> changeMyMainAddress(@CurrentMember Member member, @PathVariable Long addressId) {
         memberService.updateMemberAddress(member, addressId);
-        return RESPONSE_OK;
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**
@@ -89,7 +88,7 @@ public class MemberInfoController {
     @GetMapping("/address")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     public ResponseEntity<List<MemberAddressResponse>> getMyAddressList(@CurrentMember Member member) {
-        return ResponseEntity.ok(memberService.getMyAddressList(member));
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMyAddressList(member));
     }
 
 }
