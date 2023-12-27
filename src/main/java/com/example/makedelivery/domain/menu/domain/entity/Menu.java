@@ -65,6 +65,9 @@ public class Menu {
         this.updateDateTime = updateDateTime;
     }
 
+    /**
+     * 해당 메뉴가 속한 메뉴 그룹의 변경이 가능합니다.
+     */
     public void updateMenuInfo(String name, String description, Integer price, Long menuGroupId, String imageFileName, LocalDateTime updateDateTime) {
         this.name = name;
         this.description = description;
