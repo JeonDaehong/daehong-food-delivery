@@ -1,7 +1,7 @@
 package com.example.makedelivery.member;
 
 import com.example.makedelivery.common.annotation.LoginCheck.MemberLevel;
-import com.example.makedelivery.common.exception.MemberNotFoundException;
+import com.example.makedelivery.common.exception.ApiException;
 import com.example.makedelivery.domain.member.model.LoginRequest;
 import com.example.makedelivery.domain.member.model.MemberJoinRequest;
 import com.example.makedelivery.domain.member.model.MemberPasswordRequest;
@@ -9,7 +9,6 @@ import com.example.makedelivery.domain.member.model.MemberProfileRequest;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.member.repository.MemberRepository;
 import com.example.makedelivery.domain.member.service.MemberService;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
+import static com.example.makedelivery.common.exception.ExceptionEnum.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
@@ -41,14 +41,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 public class MemberServiceTest {
 
-    @InjectMocks
-    private MemberService memberService;
-
     @Mock
     private MemberRepository memberRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @InjectMocks
+    private MemberService memberService;
 
     private Member member;
     private MemberJoinRequest memberJoinRequest;
@@ -56,20 +56,31 @@ public class MemberServiceTest {
     private MemberProfileRequest memberProfileRequest;
     private MemberPasswordRequest memberPasswordRequest;
 
-    private final String TEST_EMAIL = "aTestAdmin710a@admin.co.kr";
-
     @BeforeEach
     void setTestMember() {
 
         // Member
-        memberJoinRequest = new MemberJoinRequest(TEST_EMAIL,
-                "1a2a3a4a5a!@#","TestAdmin", MemberLevel.MEMBER);
+        memberJoinRequest = MemberJoinRequest.builder()
+                .email("aTestAdmin710a@admin.co.kr")
+                .password("1a2a3a4a5a!@#")
+                .nickname("TestAdmin")
+                .memberLevel(MemberLevel.MEMBER)
+                .build();
 
-        loginRequest = new LoginRequest(TEST_EMAIL, "1a2a3a4a5a!@#", MemberLevel.MEMBER);
+        loginRequest = LoginRequest.builder()
+                .email("aTestAdmin710a@admin.co.kr")
+                .password("1a2a3a4a5a!@#")
+                .memberLevel(MemberLevel.MEMBER)
+                .build();
 
-        memberProfileRequest = new MemberProfileRequest("TestUpdateAdmin");
+        memberProfileRequest = MemberProfileRequest.builder()
+                .nickname("TestUpdateAdmin")
+                .build();
 
-        memberPasswordRequest = new MemberPasswordRequest("1a2a3a4a5a!@#", "1b2b3b4b5b#@!");
+        memberPasswordRequest = MemberPasswordRequest.builder()
+                .oldPassword("1a2a3a4a5a!@#")
+                .newPassword("1b2b3b4b5b#@!")
+                .build();
 
         member = MemberJoinRequest.toEntity(memberJoinRequest, passwordEncoder);
 
@@ -77,21 +88,17 @@ public class MemberServiceTest {
 
 
     @Test
-    @DisplayName("중복된 이메일이 존재할 경우 true 를 반환합니다.")
+    @DisplayName("중복된 이메일이 존재할 경우 Exception 을 발생시킨다.")
     void existsByEmail() {
-        // given & when
+        // given
         when(memberRepository.existsByEmail(any())).thenReturn(true);
-        // then
-        assertTrue(memberService.existsByEmail(member.getEmail()));
-    }
-
-    @Test
-    @DisplayName("중복된 이메일이 없을 경우 false 를 반환합니다.")
-    void notExistsByEmail() {
-        // given & when
-        when(memberRepository.existsByEmail(any())).thenReturn(false);
-        // then
-        assertFalse(memberService.existsByEmail(member.getEmail()));
+        // when & then
+        ApiException apiException = assertThrows(ApiException.class, () -> {
+            memberService.existsByEmail(member.getEmail());
+        });
+        assertEquals(DUPLICATED_EMAIL.getCode(), apiException.getError().getCode());
+        // System.out.println("apiException.getError().getCode() = " + apiException.getError().getCode());
+        // System.out.println("DUPLICATED_EMAIL.getCode() = " + DUPLICATED_EMAIL.getCode());
     }
 
     @Test
@@ -108,32 +115,28 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("해당 이메일로 가입된 사용자가 없는 경우 에러를 발생한다.")
+    @DisplayName("해당 이메일로 가입된 사용자가 없는 경우 Exception 을 발생시킨다.")
     void isNotExistMemberFindByEmail() {
-        // given & when
-        when(memberRepository.findMemberByEmail(any())).thenReturn(Optional.empty());
-        // then
-        assertThrows(MemberNotFoundException.class, () -> { memberService.findMemberByEmail(member.getEmail()); });
-    }
-
-    @Test
-    @DisplayName("로그인 시도 시 패스워드가 일치하면 true 를 반환한다.")
-    void idValidMemberTrue() {
         // given
-        when(memberRepository.findMemberByEmail(any())).thenReturn(Optional.of(member));
-        when(passwordEncoder.matches(any(), any())).thenReturn(true);
-        // then
-        assertTrue(memberService.isValidMember(loginRequest));
+        when(memberRepository.findMemberByEmail(any())).thenReturn(Optional.empty());
+        // when & then
+        ApiException apiException = assertThrows(ApiException.class, () -> {
+            memberService.findMemberByEmail(member.getEmail());
+        });
+        assertEquals(MEMBER_NOT_FOUND.getCode(), apiException.getError().getCode());
     }
 
     @Test
-    @DisplayName("로그인 시도 시 패스워드가 불일치하면 false 를 반환한다.")
+    @DisplayName("로그인 시도 시 패스워드가 불일치하면 Exception 을 발생시킨다.")
     void idValidMemberFalse() {
         // given
         when(memberRepository.findMemberByEmail(any())).thenReturn(Optional.of(member));
         when(passwordEncoder.matches(any(), any())).thenReturn(false);
-        // then
-        assertFalse(memberService.isValidMember(loginRequest));
+        // when & then
+        ApiException apiException = assertThrows(ApiException.class, () -> {
+            memberService.isValidMember(loginRequest);
+        });
+        assertEquals(LOGIN_SECURITY_ERROR.getCode(), apiException.getError().getCode());
     }
 
     @Test
@@ -141,7 +144,6 @@ public class MemberServiceTest {
     void successToUpdateMemberProfile() {
         // when
         memberService.updateMemberProfile(member, memberProfileRequest);
-
         // then
         assertEquals(member.getNickname(), memberProfileRequest.getNickname());
     }
