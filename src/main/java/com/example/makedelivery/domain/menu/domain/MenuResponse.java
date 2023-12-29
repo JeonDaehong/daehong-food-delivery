@@ -12,15 +12,15 @@ public class MenuResponse {
     private String name;
     private Integer price;
     private String description;
-    private String imageFileName;
+    private String awsImagePathURL;
 
-    public static MenuResponse toMenuResponse(Menu menu) {
+    public static MenuResponse toMenuResponse(Menu menu, String awsImagePathURL) {
         return MenuResponse.builder()
                 .id(menu.getId())
                 .name(menu.getName())
                 .price(menu.getPrice())
                 .description(menu.getDescription())
-                .imageFileName(menu.getImageFileName())
+                .awsImagePathURL(awsImagePathURL)
                 .build();
     }
 

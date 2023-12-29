@@ -2,6 +2,7 @@ package com.example.makedelivery.domain.menu.service;
 
 import com.example.makedelivery.common.exception.ApiException;
 import com.example.makedelivery.common.exception.ExceptionEnum;
+import com.example.makedelivery.domain.image.service.FileService;
 import com.example.makedelivery.domain.menu.domain.MenuGroupResponse;
 import com.example.makedelivery.domain.menu.domain.MenuRequest;
 import com.example.makedelivery.domain.menu.domain.MenuResponse;
@@ -26,6 +27,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MenuService {
 
+    private final FileService fileService; // AWS S3 getFileURL
+
     private final MenuRepository menuRepository;
     private final MenuGroupRepository menuGroupRepository;
 
@@ -38,8 +41,8 @@ public class MenuService {
     }
 
     @Transactional
-    public void addMenu(MenuRequest request) {
-        Menu menu = MenuRequest.toEntity(request);
+    public void addMenu(MenuRequest request, String imageFileName) {
+        Menu menu = MenuRequest.toEntity(request, imageFileName);
         menuRepository.save(menu);
     }
 
@@ -50,8 +53,13 @@ public class MenuService {
                 request.getDescription(),
                 request.getPrice(),
                 request.getMenuGroupId(),
-                request.getImageFileName(),
                 LocalDateTime.now());
+    }
+
+    @Transactional
+    public void updateMenuImage(Long menuId, String imageFileName) {
+        Menu menu = getMenuByIdOrThrowException(menuId);
+        menu.updateMenuImage(imageFileName, LocalDateTime.now());
     }
 
     @Transactional
@@ -96,7 +104,10 @@ public class MenuService {
         return menuRepository.findAllByMenuGroupIdAndStatusOrderByName(menuId, Menu.Status.DEFAULT)
                 .orElse(List.of())
                 .stream()
-                .map(MenuResponse::toMenuResponse)
+                .map(menu -> {
+                    String awsImagePathURL = fileService.getFilePath(menu.getImageFileName());
+                    return MenuResponse.toMenuResponse(menu, awsImagePathURL);
+                })
                 .toList();
     }
 

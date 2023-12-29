@@ -95,6 +95,7 @@ public class StoreService {
     /**
      * 실제로 DB 에서 바로 삭제되지 않고,
      * Status 가 DEFAULT --> DELETED 로 변경됩니다.
+     * ( 회원, 매장 같이 DB 에서 중요하고 테이블 관게가 많이 엮이는 테이블은 운영자가 직접 삭제하게끔 설계하였습니다. )
      * <br><br>
      * 그리고 이 때 DB의 정보가 바뀌게 되므로,
      * 고객들의 StoreList 관련 된 캐싱 정보를 모두 초기화 합니다.
@@ -104,10 +105,5 @@ public class StoreService {
     public void deleteStore(Long storeId, Member member) {
         Store myStore = findMyStore(storeId, member);
         myStore.deleteStoreStatus(LocalDateTime.now());
-    }
-
-    @Transactional
-    public void deleteAllStoreDeleteStatus() {
-        storeRepository.deleteAllByStatus(Status.DELETED);
     }
 }

@@ -28,16 +28,14 @@ public class MenuRequest {
     @NotEmpty(message = "메뉴 그룹 설정은 필수입니다.")
     private Long menuGroupId;
 
-    private String imageFileName;
-
-    public static Menu toEntity(MenuRequest request) {
+    public static Menu toEntity(MenuRequest request, String imageFileName) {
         return Menu.builder()
                 .name(request.getName())
                 .price(request.getPrice())
                 .description(request.getDescription())
                 .menuGroupId(request.getMenuGroupId())
                 .status(Status.DEFAULT)
-                .imageFileName(request.getImageFileName())
+                .imageFileName(imageFileName)
                 .createDateTime(LocalDateTime.now())
                 .updateDateTime(LocalDateTime.now())
                 .build();

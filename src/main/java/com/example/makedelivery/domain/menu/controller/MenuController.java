@@ -14,7 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.example.makedelivery.common.constants.URIConstants.*;
@@ -34,16 +36,18 @@ import static com.example.makedelivery.common.constants.URIConstants.*;
 @RequestMapping(MENU_API_URI)
 public class MenuController {
 
-    private final MenuApplicationService menuApplicationService; // MenuService + StoreService
+    private final MenuApplicationService menuApplicationService; // MenuService + StoreService + fileService
     private final MenuService menuService;
+
 
 
     @PostMapping
     @LoginCheck(memberLevel = MemberLevel.OWNER)
     public ResponseEntity<HttpStatus> addMenu(@CurrentMember Member member,
                                               @RequestBody @Valid MenuRequest request,
-                                              @PathVariable Long storeId) {
-        menuApplicationService.addMenu(storeId, member, request);
+                                              @PathVariable Long storeId,
+                                              @RequestPart MultipartFile file) throws IOException {
+        menuApplicationService.addMenu(storeId, member, request, file); // 메뉴 등록시, 이미지 등록은 필수입니다.
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -54,6 +58,17 @@ public class MenuController {
                                                             @PathVariable Long menuId,
                                                             @PathVariable Long storeId) {
         menuApplicationService.updateMenuInformation(storeId, menuId, member, request);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PatchMapping("/{menuId}/changeImage")
+    @LoginCheck(memberLevel = MemberLevel.OWNER)
+    public ResponseEntity<HttpStatus> updateMenuImage(@CurrentMember Member member,
+                                                      @PathVariable Long menuId,
+                                                      @PathVariable Long storeId,
+                                                      @RequestParam String beforeImageName,
+                                                      @RequestPart MultipartFile file) throws IOException {
+        menuApplicationService.updateMenuImage(storeId, menuId, member, file, beforeImageName);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

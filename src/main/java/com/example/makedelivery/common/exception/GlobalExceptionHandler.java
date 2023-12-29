@@ -1,10 +1,13 @@
 package com.example.makedelivery.common.exception;
 
+import com.amazonaws.SdkClientException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
+
+import java.io.IOException;
 
 import static com.example.makedelivery.common.exception.ExceptionEnum.*;
 
@@ -41,6 +44,17 @@ public class GlobalExceptionHandler {
                 .body(ExceptionDto.builder()
                         .errorCode(LOGIN_SECURITY_ERROR.getCode())
                         .errorMessage(e.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler({IOException.class})
+    public ResponseEntity<ExceptionDto> exceptionHandler(final IOException e) {
+        log.error("An error occurred: {}", e.getMessage(), e);
+        return ResponseEntity
+                .status(IMG_UPLOAD_ERROR.getStatus())
+                .body(ExceptionDto.builder()
+                        .errorCode(IMG_UPLOAD_ERROR.getCode())
+                        .errorMessage(IMG_UPLOAD_ERROR.getMessage())
                         .build());
     }
 

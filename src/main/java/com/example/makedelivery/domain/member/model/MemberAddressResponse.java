@@ -8,12 +8,14 @@ import lombok.*;
 @Getter
 public class MemberAddressResponse {
 
+    private Long id;
     private String address;
     private double longitude;
     private double latitude;
 
     public static MemberAddressResponse toMemberAddressResponse(MemberAddress memberAddress) {
         return MemberAddressResponse.builder()
+                .id(memberAddress.getId())
                 .address(memberAddress.getAddress())
                 .longitude(memberAddress.getLongitude())
                 .latitude(memberAddress.getLatitude())
