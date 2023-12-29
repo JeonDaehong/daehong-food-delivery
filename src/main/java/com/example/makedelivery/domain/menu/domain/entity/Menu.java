@@ -68,11 +68,15 @@ public class Menu {
     /**
      * 해당 메뉴가 속한 메뉴 그룹의 변경이 가능합니다.
      */
-    public void updateMenuInfo(String name, String description, Integer price, Long menuGroupId, String imageFileName, LocalDateTime updateDateTime) {
+    public void updateMenuInfo(String name, String description, Integer price, Long menuGroupId, LocalDateTime updateDateTime) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.menuGroupId = menuGroupId;
+        this.updateDateTime = updateDateTime;
+    }
+
+    public void updateMenuImage(String imageFileName, LocalDateTime updateDateTime) {
         this.imageFileName = imageFileName;
         this.updateDateTime = updateDateTime;
     }

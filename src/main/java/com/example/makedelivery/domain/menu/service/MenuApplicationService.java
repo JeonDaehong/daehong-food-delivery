@@ -1,13 +1,16 @@
 package com.example.makedelivery.domain.menu.service;
 
+import com.example.makedelivery.domain.image.service.FileService;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.menu.domain.MenuRequest;
 import com.example.makedelivery.domain.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * ApplicationService 는, MenuService 와 StoreService 를 동시에 처리하는 것처럼,
@@ -26,6 +29,7 @@ public class MenuApplicationService {
 
     private final MenuService menuService;
     private final StoreService storeService;
+    private final FileService fileService;
 
     /**
      * Transactional 의 기본 상태는 @Transactional(propagation = Propagation.REQUIRED) 입니다.
@@ -39,15 +43,30 @@ public class MenuApplicationService {
      *   DB write 하는 메서드라 가정하였을 때도 롤백이 가능합니다. )
      */
     @Transactional
-    public void addMenu(Long storeId, Member member, MenuRequest request) {
+    public void addMenu(Long storeId, Member member, MenuRequest request, MultipartFile file) throws IOException {
         storeService.validationCheckedMyStore(storeId, member);
-        menuService.addMenu(request);
+        String imageFileName = fileService.uploadFile(file); // AWS S3 upload
+        menuService.addMenu(request, imageFileName);
     }
 
     @Transactional
     public void updateMenuInformation(Long storeId, Long menuId, Member member, MenuRequest request) {
         storeService.validationCheckedMyStore(storeId, member);
         menuService.updateMenuInformation(menuId, request);
+    }
+
+    /**
+     * Delete 이후 Upload 하는 기능을 합친 메서드를 만들지 않은 이유는,
+     * 논리적 설계상 AmazonS3FileService 안에 update, delete, upload 메서드가 다 들어가는데
+     * 각각 트랜잭션이 걸려있으므로, self-invocation 현상이 발생할 수 있습니다.
+     * 그래서 이렇게 따로 불러오는 방법을 선택하였습니다.
+     */
+    @Transactional
+    public void updateMenuImage(Long storeId, Long menuId, Member member, MultipartFile file, String beforeImageFileName) throws IOException {
+        storeService.validationCheckedMyStore(storeId, member);
+        fileService.deleteFile(beforeImageFileName); // AWS S3에서 기존 이미지 삭제
+        String newImageFileName = fileService.uploadFile(file); // AWS S3에 새로운 이미지 업로드
+        menuService.updateMenuImage(menuId, newImageFileName);
     }
 
     @Transactional
