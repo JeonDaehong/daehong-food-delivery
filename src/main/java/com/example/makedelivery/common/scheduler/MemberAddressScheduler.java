@@ -1,5 +1,6 @@
 package com.example.makedelivery.common.scheduler;
 
+import com.example.makedelivery.domain.member.service.MemberAddressService;
 import com.example.makedelivery.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -7,9 +8,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AddressScheduler {
+public class MemberAddressScheduler {
 
-    private final MemberService memberService;
+    private final MemberAddressService memberAddressService;
 
     /**
      * Status 가 "삭제" 상태인 주소들을 DB 에서 실제로 삭제합니다.
@@ -20,7 +21,7 @@ public class AddressScheduler {
      */
     @Scheduled(fixedDelay = 1000 * 60 * 10) // 10분에 한 번 실행
     public void deleteAllAddressDeleteStatus() {
-        memberService.deleteAllAddressDeleteStatus();
+        memberAddressService.deleteAllAddressDeleteStatus();
     }
 
 }

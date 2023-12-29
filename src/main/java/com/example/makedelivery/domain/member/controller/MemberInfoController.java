@@ -6,6 +6,7 @@ import com.example.makedelivery.common.annotation.LoginCheck.MemberLevel;
 import com.example.makedelivery.domain.member.model.*;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.member.service.LoginService;
+import com.example.makedelivery.domain.member.service.MemberAddressService;
 import com.example.makedelivery.domain.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import static com.example.makedelivery.common.constants.URIConstants.*;
 public class MemberInfoController {
 
     private final MemberService memberService;
+    private final MemberAddressService memberAddressService;
     private final LoginService loginService;
 
     @GetMapping("/profile")
@@ -61,14 +63,14 @@ public class MemberInfoController {
     @PostMapping("/address")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     public ResponseEntity<HttpStatus> addAddress(@CurrentMember Member member, @RequestBody @Valid MemberAddressRequest request) {
-        memberService.addAddress(member, request);
+        memberAddressService.addAddress(member, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/address/{addressId}")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     public ResponseEntity<HttpStatus> deleteAddress(@CurrentMember Member member, @PathVariable Long addressId) {
-        memberService.deleteAddress(member, addressId);
+        memberAddressService.deleteAddress(member, addressId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -78,7 +80,7 @@ public class MemberInfoController {
     @PostMapping("/address/{addressId}")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     public ResponseEntity<HttpStatus> changeMyMainAddress(@CurrentMember Member member, @PathVariable Long addressId) {
-        memberService.updateMemberAddress(member, addressId);
+        memberAddressService.updateMainAddress(member, addressId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -88,7 +90,7 @@ public class MemberInfoController {
     @GetMapping("/address")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
     public ResponseEntity<List<MemberAddressResponse>> getMyAddressList(@CurrentMember Member member) {
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.getMyAddressList(member));
+        return ResponseEntity.status(HttpStatus.OK).body(memberAddressService.getMyAddressList(member));
     }
 
 }

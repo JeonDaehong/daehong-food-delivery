@@ -3,6 +3,7 @@ package com.example.makedelivery.domain.member.model.entity;
 import com.example.makedelivery.common.annotation.LoginCheck.MemberLevel;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 
