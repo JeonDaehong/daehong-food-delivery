@@ -16,6 +16,7 @@ public enum ExceptionEnum {
     MENU_NOT_FOUND(HttpStatus.BAD_REQUEST, "E_0006", "해당 메뉴를 찾을 수 없습니다."),
     STORE_NOT_FOUND(HttpStatus.BAD_REQUEST, "E_0007", "해당 매장 정보를 찾을 수 없습니다."),
     OPTN_NOT_FOUND(HttpStatus.BAD_REQUEST, "E_0008", "해당 옵션 정보를 찾을 수 없습니다."),
+    IMG_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E_0009", "이미지 입출력도중 에러가 발생하였습니다. 관리자에게 문의해주시기 바랍니다."),
     DUPLICATED_EMAIL(HttpStatus.CONFLICT, "B_0001", "중복된 아이디(이메일) 입니다."),
     DUPLICATED_STORE_NAME(HttpStatus.CONFLICT, "B_0002", "중복된 매장 이름입니다."),
     MAIN_ADDR_DELETE(HttpStatus.CONFLICT, "B_0003", "메인 주소는 삭제할 수 없습니다."),
@@ -23,6 +24,7 @@ public enum ExceptionEnum {
     PASSWORD_NOT_MATCHED(HttpStatus.CONFLICT, "B_0005", "패스워드가 일치하지 않습니다."),
     MEMBER_STATUS_DELETE(HttpStatus.CONFLICT, "B_0006", "해당 아이디는 삭제 처리된 상태입니다. 관리자에게 문의해주시기 바랍니다."),
     MEMBER_STATUS_STOPPED(HttpStatus.CONFLICT, "B_0007", "해당 아이디는 정지 처리된 상태입니다. 관리자에게 문의해주시기 바랍니다."),
+    CART_STORE_NOT_MATCHED(HttpStatus.CONFLICT, "B_0008", "장바구니에는 같은 매장의 메뉴만 한 번에 담을 수 있습니다. 다른 매장의 메뉴를 담으시려면 장바구니를 비워주시기 바랍니다."),
     LOGIN_SECURITY_ERROR(HttpStatus.UNAUTHORIZED, "S_0001", "로그인 정보가 올바르지 않습니다. ID, PW를 다시 입력해주시기 바랍니다."),
     STORE_SECURITY_ERROR(HttpStatus.UNAUTHORIZED, "S_0002", "해당 매장에 대한 접근 권한이 없습니다.");
 
