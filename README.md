@@ -6,3 +6,5 @@
 
 ### 2. [여러 대의 서버에서 이미지를 관리할 수 있는 AWS S3 활용법](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-%EC%97%AC%EB%9F%AC-%EB%8C%80%EC%9D%98-%EC%84%9C%EB%B2%84%EB%A5%BC-%EC%9C%84%ED%95%9C-AWS-S3-%ED%99%9C%EC%9A%A9-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EA%B4%80%EB%A6%AC)
 
+### 3.[Redisson Lock 을 활용한, 적립 포인트 → 사용 가능 포인트 전환 기능 구현](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-Redisson-Lock-%EC%9D%84-%ED%99%9C%EC%9A%A9%ED%95%9C-%EC%A0%81%EB%A6%BD-%ED%8F%AC%EC%9D%B8%ED%8A%B8-%E2%86%92-%EC%82%AC%EC%9A%A9-%EA%B0%80%EB%8A%A5-%ED%8F%AC%EC%9D%B8%ED%8A%B8-%EC%A0%84%ED%99%98-%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84)
+
