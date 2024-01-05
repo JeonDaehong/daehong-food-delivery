@@ -29,8 +29,6 @@ public class OptionRequest {
                 .price(request.getPrice())
                 .menuId(menuId)
                 .status(Status.DEFAULT)
-                .createDateTime(LocalDateTime.now())
-                .updateDateTime(LocalDateTime.now())
                 .build();
     }
 

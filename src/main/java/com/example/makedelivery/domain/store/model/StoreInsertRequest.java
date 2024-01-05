@@ -39,7 +39,7 @@ public class StoreInsertRequest {
     @NotNull(message = "위도는 공란일 수 없습니다.")
     private Double latitude;
 
-    public static Store toEntity(StoreInsertRequest request, Long ownerId) {
+    public static Store toEntity(StoreInsertRequest request, Long ownerId, String imageFileName) {
         return Store.builder()
                 .name(request.getName())
                 .phone(request.getPhone())
@@ -51,8 +51,7 @@ public class StoreInsertRequest {
                 .status(Store.Status.DEFAULT) // 기본 생성은 정상 상태
                 .introduction(request.getIntroduction())
                 .categoryId(request.categoryId)
-                .createDateTime(LocalDateTime.now())
-                .updateDateTime(LocalDateTime.now())
+                .imageFileName(imageFileName)
                 .build();
     }
 

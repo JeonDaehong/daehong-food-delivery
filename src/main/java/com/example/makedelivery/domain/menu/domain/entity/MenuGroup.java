@@ -1,5 +1,6 @@
 package com.example.makedelivery.domain.menu.domain.entity;
 
+import com.example.makedelivery.common.constants.DateEntity;
 import com.example.makedelivery.domain.store.model.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @ToString
 @Table(name = "TB_MENU_GROUP")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MenuGroup {
+public class MenuGroup extends DateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,12 +29,6 @@ public class MenuGroup {
     @Enumerated(value = EnumType.STRING)
     private Status status;
 
-    @Column(name = "CRTE_DTTM")
-    private LocalDateTime createDateTime;
-
-    @Column(name = "UPDT_DTTM")
-    private LocalDateTime updateDateTime;
-
     @Getter
     @RequiredArgsConstructor
     public enum Status {
@@ -45,22 +40,18 @@ public class MenuGroup {
 
 
     @Builder
-    public MenuGroup(String name, Long storeId, Status status, LocalDateTime createDateTime, LocalDateTime updateDateTime) {
+    public MenuGroup(String name, Long storeId, Status status) {
         this.name = name;
         this.storeId = storeId;
         this.status = status;
-        this.createDateTime = createDateTime;
-        this.updateDateTime = updateDateTime;
     }
 
-    public void updateMenuGroup(String name, LocalDateTime updateDateTime) {
+    public void updateMenuGroup(String name) {
         this.name = name;
-        this.updateDateTime = updateDateTime;
     }
 
-    public void deleteMenuGroup(LocalDateTime updateDateTime) {
+    public void deleteMenuGroup() {
         this.status = Status.DELETED;
-        this.updateDateTime = updateDateTime;
     }
 
 }

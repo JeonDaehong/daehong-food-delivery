@@ -1,7 +1,11 @@
 package com.example.makedelivery.domain.member.model.entity;
 
+import com.example.makedelivery.common.constants.DateEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,7 +16,7 @@ import java.util.List;
 @ToString
 @Table(name = "TB_CART")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Cart {
+public class Cart extends DateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,23 +41,14 @@ public class Cart {
     @Column(name = "COUNT")
     private Integer count;
 
-    @Column(name = "CRTE_DTTM")
-    private LocalDateTime createDateTime;
-
-    @Column(name = "UPDT_DTTM")
-    private LocalDateTime updateDateTime;
-
     @Builder
-    public Cart(Integer price, Long menuId, Long storeId, Long memberId, String menuName, Integer count,
-                LocalDateTime createDateTime, LocalDateTime updateDateTime) {
+    public Cart(Integer price, Long menuId, Long storeId, Long memberId, String menuName, Integer count) {
         this.price = price;
         this.menuId = menuId;
         this.menuName = menuName;
         this.storeId = storeId;
         this.memberId = memberId;
         this.count = count;
-        this.createDateTime = createDateTime;
-        this.updateDateTime = updateDateTime;
     }
 
 }
