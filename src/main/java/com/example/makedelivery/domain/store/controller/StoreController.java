@@ -7,6 +7,7 @@ import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.store.model.StoreInfoUpdateRequest;
 import com.example.makedelivery.domain.store.model.StoreInsertRequest;
 import com.example.makedelivery.domain.store.model.StoreResponse;
+import com.example.makedelivery.domain.store.service.StoreApplicationService;
 import com.example.makedelivery.domain.store.service.StoreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.example.makedelivery.common.constants.URIConstants.*;
@@ -26,11 +29,14 @@ import static com.example.makedelivery.common.constants.URIConstants.*;
 public class StoreController {
 
     private final StoreService storeService;
+    private final StoreApplicationService storeApplicationService;
 
     @PostMapping("/insert")
     @LoginCheck(memberLevel = MemberLevel.OWNER)
-    public ResponseEntity<HttpStatus> addStore(@RequestBody @Valid StoreInsertRequest request, @CurrentMember Member member)  {
-        storeService.addStore(request, member);
+    public ResponseEntity<HttpStatus> addStore(@RequestBody @Valid StoreInsertRequest request,
+                                               @CurrentMember Member member,
+                                               @RequestPart MultipartFile file) throws IOException {
+        storeApplicationService.addStore(request, member, file);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -70,6 +76,16 @@ public class StoreController {
                                                              @PathVariable Long storeId) {
         storeService.validationCheckedMyStore(storeId, member);
         storeService.updateStoreInformation(storeId, request, member);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PatchMapping("/{storeId}/changeImage")
+    @LoginCheck(memberLevel = MemberLevel.OWNER)
+    public ResponseEntity<HttpStatus> updateStoreImage(@CurrentMember Member member,
+                                                       @PathVariable Long storeId,
+                                                       @RequestParam String beforeImageName,
+                                                       @RequestPart MultipartFile file) throws IOException {
+        storeApplicationService.updateStoreImage(member, storeId, beforeImageName, file);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

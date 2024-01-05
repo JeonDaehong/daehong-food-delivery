@@ -1,5 +1,6 @@
 package com.example.makedelivery.domain.store.model.entity;
 
+import com.example.makedelivery.common.constants.DateEntity;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @ToString
 @Table(name = "TB_STORE")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Store {
+public class Store extends DateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,11 +51,8 @@ public class Store {
     @Column(name = "CATEGORY_ID")
     private Long categoryId;
 
-    @Column(name = "CRTE_DTTM")
-    private LocalDateTime createDateTime;
-
-    @Column(name = "UPDT_DTTM")
-    private LocalDateTime updateDateTime;
+    @Column(name = "IMG_FILE_NAME")
+    private String imageFileName;
 
     @Getter
     @RequiredArgsConstructor
@@ -76,7 +74,7 @@ public class Store {
 
     @Builder
     public Store(String name, String phone, String address, Double longitude, Double latitude, Long ownerId, OpenStatus openStatus, Status status,
-                 String introduction, Long categoryId, LocalDateTime createDateTime, LocalDateTime updateDateTime) {
+                 String introduction, String imageFileName, Long categoryId) {
         this.name = name;
         this.phone = phone;
         this.address = address;
@@ -87,37 +85,36 @@ public class Store {
         this.status = status;
         this.introduction = introduction;
         this.categoryId = categoryId;
-        this.createDateTime = createDateTime;
-        this.updateDateTime = updateDateTime;
+        this.imageFileName = imageFileName;
     }
 
-    public void openStore(LocalDateTime updateDateTime) {
+    public void openStore() {
         this.openStatus = OpenStatus.OPENED;
-        this.updateDateTime = updateDateTime;
     }
 
-    public void closeStore(LocalDateTime updateDateTime) {
+    public void closeStore() {
         this.openStatus = OpenStatus.CLOSED;
-        this.updateDateTime = updateDateTime;
     }
 
     /**
      * 매장 정보 변경 : 업종은 변경이 불가능합니다.
      */
     public void updateStoreInfo(String name, String phone, String address, Double longitude, Double latitude,
-                                String introduction, LocalDateTime updateDateTime) {
+                                String introduction) {
         this.name = name;
         this.phone = phone;
         this.address = address;
         this.longitude = longitude;
         this.latitude = latitude;
         this.introduction = introduction;
-        this.updateDateTime = updateDateTime;
     }
 
-    public void deleteStoreStatus(LocalDateTime updateDateTime) {
+    public void updateStoreImage(String imageFileName) {
+        this.imageFileName = imageFileName;
+    }
+
+    public void deleteStoreStatus() {
         this.status = Status.DELETED;
-        this.updateDateTime = updateDateTime;
     }
 
 }

@@ -22,8 +22,9 @@ public class StoreResponse {
     private Long categoryId;
     private Double longitude;
     private Double latitude;
+    private String awsImagePathURL;
 
-    public static StoreResponse toStoreResponse(Store store) {
+    public static StoreResponse toStoreResponse(Store store, String awsImagePathURL) {
         return StoreResponse.builder()
                 .id(store.getId())
                 .name(store.getName())
@@ -35,6 +36,7 @@ public class StoreResponse {
                 .openStatus(store.getOpenStatus())
                 .introduction(store.getIntroduction())
                 .categoryId(store.getCategoryId())
+                .awsImagePathURL(awsImagePathURL)
                 .build();
     }
 

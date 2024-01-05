@@ -65,7 +65,7 @@ public class StoreServiceTest {
         Member memberMock = mock(Member.class);
         when(storeRepository.existsByName(storeInsertRequest.getName())).thenReturn(false);
         // when
-        storeService.addStore(storeInsertRequest, memberMock);
+        storeService.addStore(storeInsertRequest, memberMock, "testImage.png");
         // then
         verify(storeRepository, times(1)).save(any(Store.class));
     }
@@ -78,7 +78,7 @@ public class StoreServiceTest {
         when(storeRepository.existsByName(storeInsertRequest.getName())).thenReturn(true);
         // when & then
         ApiException apiException = assertThrows(ApiException.class, () -> {
-            storeService.addStore(storeInsertRequest, memberMock);
+            storeService.addStore(storeInsertRequest, memberMock, "testImage.png");
         });
         assertEquals(DUPLICATED_STORE_NAME.getCode(), apiException.getError().getCode());
     }
@@ -133,7 +133,7 @@ public class StoreServiceTest {
         // when
         storeService.openMyStore(storeMock.getId(), memberMock);
         // then
-        verify(storeMock, times(1)).openStore(any(LocalDateTime.class));
+        verify(storeMock, times(1)).openStore();
     }
 
     @Test
@@ -146,7 +146,7 @@ public class StoreServiceTest {
         // when
         storeService.closeMyStore(storeMock.getId(), memberMock);
         // then
-        verify(storeMock, times(1)).closeStore(any(LocalDateTime.class));
+        verify(storeMock, times(1)).closeStore();
     }
 
     @Test
@@ -159,6 +159,6 @@ public class StoreServiceTest {
         // when
         storeService.deleteStore(storeMock.getId(), memberMock);
         // then
-        verify(storeMock, times(1)).deleteStoreStatus(any(LocalDateTime.class));
+        verify(storeMock, times(1)).deleteStoreStatus();
     }
 }
