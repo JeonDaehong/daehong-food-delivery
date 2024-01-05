@@ -40,26 +40,25 @@ public class OptionService {
     public void updateOption(OptionRequest request, Long menuId, Long optionId) {
         Option option = findOptionByIdAndMenuId(optionId, menuId);
         option.updateOptionInfo(request.getName(),
-                                request.getPrice(),
-                                LocalDateTime.now());
+                                request.getPrice());
     }
 
     @Transactional
     public void deleteOption(Long menuId, Long optionId) {
         Option option = findOptionByIdAndMenuId(optionId, menuId);
-        option.deleteMenu(LocalDateTime.now());
+        option.deleteMenu();
     }
 
     @Transactional
     public void changeStatusHidden(Long menuId, Long optionId) {
         Option option = findOptionByIdAndMenuId(optionId, menuId);
-        option.changeStatusHidden(LocalDateTime.now());
+        option.changeStatusHidden();
     }
 
     @Transactional
     public void changeStatusDefault(Long menuId, Long optionId) {
         Option option = findOptionByIdAndMenuId(optionId, menuId);
-        option.changeStatusDefault(LocalDateTime.now());
+        option.changeStatusDefault();
     }
 
     @Transactional(readOnly = true)
@@ -73,7 +72,7 @@ public class OptionService {
 
     @Transactional
     public void deleteAllOptionDeleteStatus() {
-        optionRepository.deleteAllByStatus(Status.DELETED);
+        optionRepository.deleteAllByStatusAndUpdateDateTime24Hour(Status.DELETED, LocalDateTime.now().minusHours(24));
     }
 
 }

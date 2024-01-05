@@ -52,33 +52,32 @@ public class MenuService {
         menu.updateMenuInfo(request.getName(),
                 request.getDescription(),
                 request.getPrice(),
-                request.getMenuGroupId(),
-                LocalDateTime.now());
+                request.getMenuGroupId());
     }
 
     @Transactional
     public void updateMenuImage(Long menuId, String imageFileName) {
         Menu menu = getMenuByIdOrThrowException(menuId);
-        menu.updateMenuImage(imageFileName, LocalDateTime.now());
+        menu.updateMenuImage(imageFileName);
     }
 
     @Transactional
     public void deleteMenu(Long menuId) {
         Menu menu = getMenuByIdOrThrowException(menuId);
-        menu.deleteMenu(LocalDateTime.now());
+        menu.deleteMenu();
     }
 
     @Transactional
     public void changeStatusHidden(Long menuId) {
         Menu menu = getMenuByIdOrThrowException(menuId);
-        menu.changeStatusHidden(LocalDateTime.now());
+        menu.changeStatusHidden();
 
     }
 
     @Transactional
     public void changeStatusDefault(Long menuId) {
         Menu menu = getMenuByIdOrThrowException(menuId);
-        menu.changeStatusDefault(LocalDateTime.now());
+        menu.changeStatusDefault();
 
     }
 
@@ -105,7 +104,7 @@ public class MenuService {
                 .orElse(List.of())
                 .stream()
                 .map(menu -> {
-                    String awsImagePathURL = fileService.getFilePath(menu.getImageFileName());
+                    String awsImagePathURL = fileService.getFilePath(menu.getImageFileName()); // AWS S3에 저장된 메뉴의 이미지 URL 을 가져옵니다.
                     return MenuResponse.toMenuResponse(menu, awsImagePathURL);
                 })
                 .toList();
@@ -119,7 +118,7 @@ public class MenuService {
      */
     @Transactional
     public void deleteAllMenuDeleteStatus() {
-        menuRepository.deleteAllByStatus(Menu.Status.DELETED);
+        menuRepository.deleteAllByStatusAndUpdateDateTime24Hour(Menu.Status.DELETED, LocalDateTime.now().minusHours(24));
     }
 
 }
