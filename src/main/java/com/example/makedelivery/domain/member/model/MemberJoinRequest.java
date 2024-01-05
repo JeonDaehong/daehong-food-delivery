@@ -37,8 +37,8 @@ public class MemberJoinRequest {
                 .nickname(request.getNickname())
                 .memberLevel(request.memberLevel)
                 .status(Status.DEFAULT)
-                .createDateTime(LocalDateTime.now())
-                .updateDateTime(LocalDateTime.now())
+                .point(0)
+                .availablePoint(0)
                 .build();
     }
 

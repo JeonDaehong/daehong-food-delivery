@@ -76,12 +76,19 @@ public class MemberService {
 
     @Transactional
     public void updateMemberProfile(Member member, MemberProfileRequest request) {
-        member.updateProfile(request.getNickname(), LocalDateTime.now());
+        member.updateProfile(request.getNickname());
     }
 
     @Transactional
     public void updateMemberPassword(Member member, MemberPasswordRequest passwordRequest) {
-        member.updatePassword(passwordEncoder.encode(passwordRequest.getNewPassword()), LocalDateTime.now());
+        member.updatePassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
+    }
+
+    @Transactional
+    public void convertPointsToAvailablePoints(Member member, int desiredChangePoints) {
+        if ( member.getPoint() < desiredChangePoints ) throw new ApiException(POINTS_INSUFFICIENT); // 전환하려는 포인트보다 보유포인트가 적으면 예외발생
+        if ( desiredChangePoints % 5_000 != 0 || desiredChangePoints < 5_000 ) throw new ApiException(INVALID_POINT_UNIT); // 포인트 전환 단위는 최소 5,000원이며, 5,000원 단위로만 전환 가능.
+        member.convertPointsToAvailablePoints(desiredChangePoints);
     }
 
     /**
@@ -91,7 +98,7 @@ public class MemberService {
      */
     @Transactional
     public void deleteMember(Member member) {
-        member.deleteMemberStatus(LocalDateTime.now());
+        member.deleteMemberStatus();
     }
 
 }

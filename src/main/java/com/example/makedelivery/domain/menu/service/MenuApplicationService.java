@@ -62,11 +62,11 @@ public class MenuApplicationService {
      * 그래서 이렇게 따로 불러오는 방법을 선택하였습니다.
      */
     @Transactional
-    public void updateMenuImage(Long storeId, Long menuId, Member member, MultipartFile file, String beforeImageFileName) throws IOException {
+    public void updateMenuImage(Long storeId, Long menuId, Member member, MultipartFile file, String beforeImageName) throws IOException {
         storeService.validationCheckedMyStore(storeId, member);
-        fileService.deleteFile(beforeImageFileName); // AWS S3에서 기존 이미지 삭제
-        String newImageFileName = fileService.uploadFile(file); // AWS S3에 새로운 이미지 업로드
-        menuService.updateMenuImage(menuId, newImageFileName);
+        fileService.deleteFile(beforeImageName); // AWS S3에서 기존 이미지 삭제
+        String newImageName = fileService.uploadFile(file); // AWS S3에 새로운 이미지 업로드
+        menuService.updateMenuImage(menuId, newImageName);
     }
 
     @Transactional

@@ -3,6 +3,7 @@ package com.example.makedelivery.domain.member.controller;
 import com.example.makedelivery.common.annotation.CurrentMember;
 import com.example.makedelivery.common.annotation.LoginCheck;
 import com.example.makedelivery.common.annotation.LoginCheck.MemberLevel;
+import com.example.makedelivery.common.facade.RedissonLockFacade;
 import com.example.makedelivery.domain.member.model.*;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.member.service.LoginService;
@@ -28,6 +29,8 @@ public class MemberInfoController {
     private final MemberService memberService;
     private final MemberAddressService memberAddressService;
     private final LoginService loginService;
+
+    private final RedissonLockFacade redissonLockFacade; // 포인트 전환 Lock 을 걸기 위한 Facade
 
     @GetMapping("/profile")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
@@ -59,6 +62,13 @@ public class MemberInfoController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @PostMapping("/changePoint")
+    @LoginCheck(memberLevel = MemberLevel.MEMBER)
+    public ResponseEntity<HttpStatus> convertPointsToAvailablePoints(@CurrentMember Member member, @RequestParam int desiredChangePoints) {
+        redissonLockFacade.convertPointsToAvailablePoints(member, desiredChangePoints);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
 
     @PostMapping("/address")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
@@ -74,13 +84,11 @@ public class MemberInfoController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    /**
-     * 해당 주소를 메인 주소로 지정합니다.
-     */
-    @PostMapping("/address/{addressId}")
+    @PutMapping("/address/changePriority")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
-    public ResponseEntity<HttpStatus> changeMyMainAddress(@CurrentMember Member member, @PathVariable Long addressId) {
-        memberAddressService.updateMainAddress(member, addressId);
+    public ResponseEntity<HttpStatus> changeAddressPriority(@CurrentMember Member member,
+                                                            @RequestBody @Valid List<MemberAddressPriorityRequest> requestList) {
+        memberAddressService.changeAddressPriority(member, requestList);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
