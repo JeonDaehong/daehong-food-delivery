@@ -17,6 +17,8 @@ public enum ExceptionEnum {
     STORE_NOT_FOUND(HttpStatus.BAD_REQUEST, "E_0007", "해당 매장 정보를 찾을 수 없습니다."),
     OPTN_NOT_FOUND(HttpStatus.BAD_REQUEST, "E_0008", "해당 옵션 정보를 찾을 수 없습니다."),
     IMG_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E_0009", "이미지 입출력도중 에러가 발생하였습니다. 관리자에게 문의해주시기 바랍니다."),
+    POINTS_INSUFFICIENT(HttpStatus.BAD_REQUEST, "E_0010", "전환 할 포인트가 부족합니다."),
+    INVALID_POINT_UNIT(HttpStatus.BAD_REQUEST, "E_0011", "포인트 전환 단위는 5,000원 단위이며, 최소 5,000원 이상이어야 전환 가능합니다."),
     DUPLICATED_EMAIL(HttpStatus.CONFLICT, "B_0001", "중복된 아이디(이메일) 입니다."),
     DUPLICATED_STORE_NAME(HttpStatus.CONFLICT, "B_0002", "중복된 매장 이름입니다."),
     MAIN_ADDR_DELETE(HttpStatus.CONFLICT, "B_0003", "메인 주소는 삭제할 수 없습니다."),
