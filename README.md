@@ -1,6 +1,7 @@
 # Daehong Food Delivery Service
 
-<hr>
+<br>
+<br>
 
 ## 1. 개발 주요 로직
 
