@@ -9,5 +9,6 @@ public class URIConstants {
     public static final String MENU_OPTION_API_URI = "/api/option/{storeId}/{menuId}";
     public static final String STORE_LIST_API_URI = "/api/storeList";
     public static final String MEMBER_CART_API_URI = "/api/myCart";
+    public static final String ORDER_API_URI = "/api/order";
     public static final String IMAGE_API_URI = "/api/image";
 }
