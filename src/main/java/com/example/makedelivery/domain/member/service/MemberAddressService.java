@@ -33,6 +33,13 @@ public class MemberAddressService {
                 .orElseThrow(() -> new ApiException(ADDR_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
+    public MemberAddress findMemberAddressByIdAndMemberId(Long addressId, Long memberId) {
+        return memberAddressRepository
+                .findMemberAddressesByIdAndMemberId(addressId, memberId)
+                .orElseThrow(() -> new ApiException(ADDR_NOT_FOUND));
+    }
+
     @Transactional
     public void addAddress(Member member, MemberAddressRequest request) {
 

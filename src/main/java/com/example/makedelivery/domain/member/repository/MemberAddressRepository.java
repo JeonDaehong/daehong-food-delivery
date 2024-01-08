@@ -21,7 +21,9 @@ public interface MemberAddressRepository extends JpaRepository<MemberAddress, Lo
             "WHERE e.status = :status AND e.memberId = :memberId")
     int findMaxPriorityByStatusAndMemberId(@Param("status") Status status, @Param("memberId") Long memberId);
 
-    Optional<MemberAddress> findTopByStatusAndMemberIdOrderByPriorityAsc(Long memberId, Status status);
+    Optional<MemberAddress> findMemberAddressesByIdAndMemberId(Long id, Long memberId);
+
+    Optional<MemberAddress> findTopByStatusAndMemberIdOrderByPriorityAsc(Status status, Long memberId);
 
     @Modifying
     @Query("DELETE FROM MemberAddress e WHERE e.status = :status AND e.updateDateTime <= :cutOffDateTime")
