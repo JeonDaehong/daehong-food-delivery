@@ -76,7 +76,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(orderService.getMyStoreOrderList(member, storeId));
     }
 
-    @PostMapping("/{storeId}/{orderId}/changeApprove")
+    @PutMapping("/{storeId}/{orderId}/changeApprove")
     @LoginCheck(memberLevel = LoginCheck.MemberLevel.OWNER)
     public ResponseEntity<HttpStatus> changeOrderStatusApprove(@CurrentMember Member member,
                                                                @PathVariable Long storeId,
@@ -85,12 +85,12 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PostMapping("/{storeId}/{orderId}/changeCooking")
+    @PutMapping("/{storeId}/{orderId}/changeDeliveryWait")
     @LoginCheck(memberLevel = LoginCheck.MemberLevel.OWNER)
-    public ResponseEntity<HttpStatus> changeOrderStatusCooking(@CurrentMember Member member,
-                                                                @PathVariable Long storeId,
-                                                                @PathVariable Long orderId) {
-        orderService.changeOrderStatusCooking(member, orderId, storeId);
+    public ResponseEntity<HttpStatus> changeOrderStatusDeliveryWait(@CurrentMember Member member,
+                                                                    @PathVariable Long storeId,
+                                                                    @PathVariable Long orderId) {
+        orderService.changeOrderStatusDeliveryWait(member, orderId, storeId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

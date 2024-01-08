@@ -118,9 +118,9 @@ public class OrderService {
         Order order = orderRepository.findOrderByIdAndStoreId(orderId, storeId)
                 .orElseThrow( () -> new ApiException(ORDER_NOT_FOUND) );
 
-        // 주문 완료, 주문 승인, 조리중 의 경우에만 주문 취소를 할 수 있습니다.
+        // 주문 완료, 주문 승인, 배송 대기 중 의 경우에만 주문 취소를 할 수 있습니다.
         Order.OrderStatus orderStatus = order.getOrderStatus();
-        if ( orderStatus.equals(Order.OrderStatus.COMPLETE_ORDER) || orderStatus.equals(Order.OrderStatus.APPROVED_ORDER) || orderStatus.equals(Order.OrderStatus.COOKING) ) {
+        if ( orderStatus.equals(Order.OrderStatus.COMPLETE_ORDER) || orderStatus.equals(Order.OrderStatus.APPROVED_ORDER) || orderStatus.equals(Order.OrderStatus.DELIVERY_WAIT) ) {
             order.cancelOrder();
         } else {
             throw new ApiException(ORDER_CANCEL_ERROR);
@@ -210,12 +210,12 @@ public class OrderService {
             @CachePut(value = "orderListByMember", key = "#member.getId()"),
             @CachePut(value = "orderListByStore", key = "#storeId")
     })
-    public void changeOrderStatusCooking(Member member, Long orderId, Long storeId) {
+    public void changeOrderStatusDeliveryWait(Member member, Long orderId, Long storeId) {
         storeService.validationCheckedMyStore(storeId, member); // 매장 점주 맞는지 체크
         Order order = orderRepository.findOrderByIdAndStoreId(orderId, storeId)
                 .orElseThrow( () -> new ApiException(ORDER_NOT_FOUND) );
 
-        order.changeOrderStatusCooking();
+        order.changeOrderStatusDeliveryWait();
     }
 
     private void validateOrderStoreCheck(Member member, Long storeId) {
