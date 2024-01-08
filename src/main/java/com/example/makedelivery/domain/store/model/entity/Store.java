@@ -117,4 +117,12 @@ public class Store extends DateEntity {
         this.status = Status.DELETED;
     }
 
+    public boolean isDeletedCheck() {
+        return this.status.equals(Status.DELETED);
+    }
+
+    public boolean isClosedCheck() {
+        return this.openStatus.equals(OpenStatus.CLOSED);
+    }
+
 }
