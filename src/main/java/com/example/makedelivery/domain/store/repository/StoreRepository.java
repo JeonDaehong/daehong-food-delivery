@@ -17,7 +17,9 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     Optional<List<Store>> findAllByOwnerIdAndStatusOrderByName(Long ownerId, Status status);
 
-    Optional<Store> findByIdAndOwnerIdAndStatus(Long Id, Long ownerId, Status status);
+    Optional<Store> findByIdAndOwnerIdAndStatus(Long id, Long ownerId, Status status);
+
+    Optional<Store> findStoreById(Long id);
 
     boolean existsByIdAndOwnerIdAndStatus(Long id, Long ownerId, Status status);
 
@@ -48,7 +50,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     /**
      * 비회원이거나, 메인 주소를 입력하지 않은 회원이 StoreList 를 조회하였을 경우 해당 쿼리문을 사용합니다.
-     * 해당 카테고리에 포함된 매장들을 이름 순서로 100개를 반환합니다.
+     * 해당 카테고리에 포함된 매장들을 이름 순서로 30개를 반환합니다.
      */
     Optional<List<Store>> findTop30ByCategoryIdOrderByName(Long categoryId);
 

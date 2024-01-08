@@ -39,6 +39,12 @@ public class StoreService {
                 .orElseThrow(() -> new ApiException(STORE_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
+    public Store findThisStore(Long storeId) {
+        return storeRepository.findStoreById(storeId)
+                .orElseThrow(() -> new ApiException(STORE_NOT_FOUND));
+    }
+
     @Transactional
     public void addStore(StoreInsertRequest request, Member member, String imageFileName) {
         // 같은 이름의 매장은 등록할 수 없습니다.
