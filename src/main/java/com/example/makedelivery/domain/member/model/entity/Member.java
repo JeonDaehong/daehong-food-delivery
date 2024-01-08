@@ -94,6 +94,10 @@ public class Member extends DateEntity {
         this.availablePoint += changePoint;
     }
 
+    public void addPoint(Integer point) {
+        this.point += point;
+    }
+
     public void deleteMemberStatus() {
         this.status = Status.DELETED;
     }
