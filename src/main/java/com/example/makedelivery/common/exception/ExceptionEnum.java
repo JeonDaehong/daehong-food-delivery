@@ -31,6 +31,8 @@ public enum ExceptionEnum {
     OVER_POINT(HttpStatus.BAD_REQUEST, "E_0021", "구매 가격보다, 사용 포인트가 많을 수 없습니다."),
     ORDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "E_0022", "해당 주문 정보를 찾을 수 없습니다."),
     ORDER_CANCEL_ERROR(HttpStatus.BAD_REQUEST, "E_0023", "주문 완료, 주문 승인 상태의 경우에만 주문을 취소 할 수 있습니다."),
+    ALREADY_DISPATCHED(HttpStatus.BAD_REQUEST, "E_0024", "이미 배차 완료 된 주문입니다."),
+    DELIV_NOT_FOUND(HttpStatus.BAD_REQUEST, "E_0025", "해당 배달 내역을 찾을 수 없습니다."),
     DUPLICATED_EMAIL(HttpStatus.CONFLICT, "B_0001", "중복된 아이디(이메일) 입니다."),
     DUPLICATED_STORE_NAME(HttpStatus.CONFLICT, "B_0002", "중복된 매장 이름입니다."),
     MAIN_ADDR_DELETE(HttpStatus.CONFLICT, "B_0003", "메인 주소는 삭제할 수 없습니다."),
