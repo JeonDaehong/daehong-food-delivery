@@ -48,7 +48,7 @@ public class StoreListService {
     public List<StoreResponse> getStoreListByCategory(Member member, Long categoryId) {
 
         Optional<MemberAddress> memberAddressOptional = memberAddressRepository
-                .findTopByStatusAndMemberIdOrderByPriorityAsc(member.getId(), MemberAddress.Status.DEFAULT);
+                .findTopByStatusAndMemberIdOrderByPriorityAsc(MemberAddress.Status.DEFAULT, member.getId());
 
         List<Store> stores = memberAddressOptional
                 .map(memberAddress ->
