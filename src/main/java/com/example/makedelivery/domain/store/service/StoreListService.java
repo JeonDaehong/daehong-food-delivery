@@ -52,7 +52,7 @@ public class StoreListService {
 
         List<Store> stores = memberAddressOptional
                 .map(memberAddress ->
-                        storeRepository.findAllWithInDistanceOrderByDistance(memberAddress.getLatitude(), memberAddress.getLongitude(), categoryId)
+                        storeRepository.findAllWithInDistanceInCategoryIdOrderByDistance(memberAddress.getLatitude(), memberAddress.getLongitude(), categoryId)
                                 .orElse(List.of())
                 )
                 .orElseGet(() ->
