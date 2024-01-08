@@ -2,6 +2,7 @@ package com.example.makedelivery.domain.store.service;
 
 import com.example.makedelivery.common.exception.ApiException;
 import com.example.makedelivery.common.exception.ExceptionEnum;
+import com.example.makedelivery.domain.image.service.FileService;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.member.model.entity.MemberAddress;
 import com.example.makedelivery.domain.member.repository.MemberAddressRepository;
@@ -29,6 +30,8 @@ import static com.example.makedelivery.common.exception.ExceptionEnum.*;
 @RequiredArgsConstructor
 public class StoreListService {
 
+    private final FileService fileService; // AWS S3 Upload & getFileURL
+
     private final StoreRepository storeRepository;
     private final MemberAddressRepository memberAddressRepository;
 
@@ -44,24 +47,25 @@ public class StoreListService {
     @Transactional(readOnly = true)
     public List<StoreResponse> getStoreListByCategory(Member member, Long categoryId) {
 
-        if ( member != null && member.getMainAddressId() != null ) {
-            MemberAddress memberAddress = memberAddressRepository.findMemberAddressesByIdAndMemberId(member.getMainAddressId(), member.getId())
-                    .orElseThrow(() -> new ApiException(ADDR_NOT_FOUND));
+        Optional<MemberAddress> memberAddressOptional = memberAddressRepository
+                .findTopByStatusAndMemberIdOrderByPriorityAsc(MemberAddress.Status.DEFAULT, member.getId());
 
-            return storeRepository
-                    .findAllWithInDistanceOrderByDistance(memberAddress.getLatitude(), memberAddress.getLongitude(), categoryId)
-                    .orElse(List.of())
-                    .stream()
-                    .map(StoreResponse::toStoreResponse)
-                    .toList();
-        } else {
-            return storeRepository
-                    .findTop30ByCategoryIdOrderByName(categoryId)
-                    .orElse(List.of())
-                    .stream()
-                    .map(StoreResponse::toStoreResponse)
-                    .toList();
-        }
+        List<Store> stores = memberAddressOptional
+                .map(memberAddress ->
+                        storeRepository.findAllWithInDistanceInCategoryIdOrderByDistance(memberAddress.getLatitude(), memberAddress.getLongitude(), categoryId)
+                                .orElse(List.of())
+                )
+                .orElseGet(() ->
+                        storeRepository.findTop30ByCategoryIdOrderByName(categoryId)
+                                .orElse(List.of())
+                );
+
+        return stores.stream()
+                .map(store -> {
+                    String awsImagePathURL = fileService.getFilePath(store.getImageFileName());
+                    return StoreResponse.toStoreResponse(store, awsImagePathURL);
+                })
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -70,7 +74,10 @@ public class StoreListService {
                 .findAllByNameContainingKeywordOrderByName(searchStoreName)
                 .orElse(List.of())
                 .stream()
-                .map(StoreResponse::toStoreResponse)
+                .map(store -> {
+                    String awsImagePathURL = fileService.getFilePath(store.getImageFileName());
+                    return StoreResponse.toStoreResponse(store, awsImagePathURL);
+                })
                 .toList();
     }
 

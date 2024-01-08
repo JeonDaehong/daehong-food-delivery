@@ -1,5 +1,6 @@
 package com.example.makedelivery.domain.menu.domain.entity;
 
+import com.example.makedelivery.common.constants.DateEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @ToString
 @Table(name = "TB_MENU")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Menu {
+public class Menu extends DateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,12 +37,6 @@ public class Menu {
     @Column(name = "IMG_FILE_NAME")
     private String imageFileName;
 
-    @Column(name = "CRTE_DTTM")
-    private LocalDateTime createDateTime;
-
-    @Column(name = "UPDT_DTTM")
-    private LocalDateTime updateDateTime;
-
     @Getter
     @RequiredArgsConstructor
     public enum Status {
@@ -53,47 +48,48 @@ public class Menu {
     }
 
     @Builder
-    public Menu(String name, Integer price, String description, Long menuGroupId, String imageFileName, Integer priority,
-                Status status, LocalDateTime createDateTime, LocalDateTime updateDateTime) {
+    public Menu(String name, Integer price, String description, Long menuGroupId, String imageFileName,
+                Status status) {
         this.name = name;
         this.price = price;
         this.description = description;
         this.menuGroupId = menuGroupId;
         this.status = status;
         this.imageFileName = imageFileName;
-        this.createDateTime = createDateTime;
-        this.updateDateTime = updateDateTime;
     }
 
     /**
      * 해당 메뉴가 속한 메뉴 그룹의 변경이 가능합니다.
      */
-    public void updateMenuInfo(String name, String description, Integer price, Long menuGroupId, LocalDateTime updateDateTime) {
+    public void updateMenuInfo(String name, String description, Integer price, Long menuGroupId) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.menuGroupId = menuGroupId;
-        this.updateDateTime = updateDateTime;
     }
 
-    public void updateMenuImage(String imageFileName, LocalDateTime updateDateTime) {
+    public void updateMenuImage(String imageFileName ) {
         this.imageFileName = imageFileName;
-        this.updateDateTime = updateDateTime;
     }
 
-    public void changeStatusHidden(LocalDateTime updateDateTime) {
+    public void changeStatusHidden() {
         this.status = Status.HIDDEN;
-        this.updateDateTime = updateDateTime;
     }
 
-    public void changeStatusDefault(LocalDateTime updateDateTime) {
+    public void changeStatusDefault() {
         this.status = Status.DEFAULT;
-        this.updateDateTime = updateDateTime;
     }
 
-    public void deleteMenu(LocalDateTime updateDateTime) {
+    public void deleteMenu( ) {
         this.status = Status.DELETED;
-        this.updateDateTime = updateDateTime;
+    }
+
+    public boolean isDeletedCheck() {
+        return this.status.equals(Status.DELETED);
+    }
+
+    public boolean isHiddenCheck() {
+        return this.status.equals(Status.HIDDEN);
     }
 
 }

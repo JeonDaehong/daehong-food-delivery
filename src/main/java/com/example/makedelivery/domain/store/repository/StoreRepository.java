@@ -17,7 +17,9 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     Optional<List<Store>> findAllByOwnerIdAndStatusOrderByName(Long ownerId, Status status);
 
-    Optional<Store> findByIdAndOwnerIdAndStatus(Long Id, Long ownerId, Status status);
+    Optional<Store> findByIdAndOwnerIdAndStatus(Long id, Long ownerId, Status status);
+
+    Optional<Store> findStoreById(Long id);
 
     boolean existsByIdAndOwnerIdAndStatus(Long id, Long ownerId, Status status);
 
@@ -41,18 +43,31 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
             "   cos(radians(:userLatitude)) * cos(radians(s.latitude)) * cos(radians(s.longitude) - radians(:userLongitude)) + " +
             "   sin(radians(:userLatitude)) * sin(radians(s.latitude))" +
             " )")
-    Optional<List<Store>> findAllWithInDistanceOrderByDistance(@Param("userLatitude") Double userLatitude,
-                                                               @Param("userLongitude") Double userLongitude,
-                                                               @Param("categoryId") Long categoryId
-    );
+    Optional<List<Store>> findAllWithInDistanceInCategoryIdOrderByDistance(@Param("userLatitude") Double userLatitude,
+                                                                           @Param("userLongitude") Double userLongitude,
+                                                                           @Param("categoryId") Long categoryId);
 
     /**
      * 비회원이거나, 메인 주소를 입력하지 않은 회원이 StoreList 를 조회하였을 경우 해당 쿼리문을 사용합니다.
-     * 해당 카테고리에 포함된 매장들을 이름 순서로 100개를 반환합니다.
+     * 해당 카테고리에 포함된 매장들을 이름 순서로 30개를 반환합니다.
      */
     Optional<List<Store>> findTop30ByCategoryIdOrderByName(Long categoryId);
 
     @Query("SELECT s FROM Store s WHERE s.name LIKE %:keyword% ORDER BY s.name")
     Optional<List<Store>> findAllByNameContainingKeywordOrderByName(String keyword);
+
+    @Query("SELECT s FROM Store s " +
+            "WHERE " +
+            " 6371 * acos(" +
+            "   cos(radians(:userLatitude)) * cos(radians(s.latitude)) * cos(radians(s.longitude) - radians(:userLongitude)) + " +
+            "   sin(radians(:userLatitude)) * sin(radians(s.latitude))" +
+            " ) <= 10 " +
+            "ORDER BY " +
+            " 6371 * acos(" +
+            "   cos(radians(:userLatitude)) * cos(radians(s.latitude)) * cos(radians(s.longitude) - radians(:userLongitude)) + " +
+            "   sin(radians(:userLatitude)) * sin(radians(s.latitude))" +
+            " )")
+    Optional<List<Store>> findAllWithInDistanceOrderByDistance(@Param("userLatitude") Double userLatitude,
+                                                               @Param("userLongitude") Double userLongitude);
 
 }

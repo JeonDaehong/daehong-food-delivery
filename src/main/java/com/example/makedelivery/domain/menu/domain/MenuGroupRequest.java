@@ -21,8 +21,6 @@ public class MenuGroupRequest {
                 .name(request.getName())
                 .storeId(storeId)
                 .status(Status.DEFAULT)
-                .createDateTime(LocalDateTime.now())
-                .updateDateTime(LocalDateTime.now())
                 .build();
     }
 

@@ -36,8 +36,6 @@ public class MenuRequest {
                 .menuGroupId(request.getMenuGroupId())
                 .status(Status.DEFAULT)
                 .imageFileName(imageFileName)
-                .createDateTime(LocalDateTime.now())
-                .updateDateTime(LocalDateTime.now())
                 .build();
     }
 

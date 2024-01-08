@@ -37,7 +37,7 @@ public class MenuGroupService {
                 .findMenuGroupByIdAndStatus(menuGroupId, Status.DEFAULT)
                 .orElseThrow(() -> new ApiException(MENU_GROUP_NOT_FOUND));
 
-        menuGroup.updateMenuGroup(request.getName(), LocalDateTime.now());
+        menuGroup.updateMenuGroup(request.getName());
     }
 
     @Transactional
@@ -49,11 +49,11 @@ public class MenuGroupService {
         MenuGroup menuGroup = menuGroupRepository.findMenuGroupByIdAndStatus(menuGroupId, Status.DEFAULT)
                 .orElseThrow(() -> new ApiException(MENU_GROUP_NOT_FOUND));
 
-        menuGroup.deleteMenuGroup(LocalDateTime.now());
+        menuGroup.deleteMenuGroup();
     }
 
     /**
-     * 스케쥴러를 통해 상태가 Deleted 인 메뉴 그룹을
+     * 스케쥴러를 통해 상태가 Deleted 면서, 24시간 이상 지난 메뉴 그룹을
      * 삭제해 줍니다.
      * 상태를 변경하지 않고, 바로 삭제를 하면
      * 현재 진행중인 다른 로직에 영향을 받을 수 있기 때문에
@@ -61,6 +61,6 @@ public class MenuGroupService {
      */
     @Transactional
     public void deleteAllMenuGroupsDeleteStatus() {
-        menuGroupRepository.deleteAllByStatus(Status.DELETED);
+        menuGroupRepository.deleteAllByStatusAndUpdateDateTime24Hour(Status.DELETED, LocalDateTime.now().minusHours(24));
     }
 }

@@ -35,6 +35,12 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    /**
+     * 읽기 전용 서비스에는 @Transactional(readOnly = true) 를 추가해주었습니다.
+     * 해당 어노테이션을 붙이는 이유는 오직 읽기 작업(SELECT)만 수행한다는 걸 명시적으로 알리기 위함도 있고,
+     * JPA 의 더티체킹 변경감지가 일어나지 않아 메모리를 절약할 수 있으며,
+     * 트랜잭션 ID를 부여하지 않으므로 오버헤드가 일어나지 않아 성능상 이점이 생기기 때문입니다.
+     */
     @Transactional(readOnly = true)
     public void existsByEmail(String email) {
         if ( memberRepository.existsByEmail(email) ) throw new ApiException(DUPLICATED_EMAIL);
@@ -76,12 +82,19 @@ public class MemberService {
 
     @Transactional
     public void updateMemberProfile(Member member, MemberProfileRequest request) {
-        member.updateProfile(request.getNickname(), LocalDateTime.now());
+        member.updateProfile(request.getNickname());
     }
 
     @Transactional
     public void updateMemberPassword(Member member, MemberPasswordRequest passwordRequest) {
-        member.updatePassword(passwordEncoder.encode(passwordRequest.getNewPassword()), LocalDateTime.now());
+        member.updatePassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
+    }
+
+    @Transactional
+    public void convertPointsToAvailablePoints(Member member, int desiredChangePoints) {
+        if ( member.getPoint() < desiredChangePoints ) throw new ApiException(POINTS_INSUFFICIENT); // 전환하려는 포인트보다 보유포인트가 적으면 예외발생
+        if ( desiredChangePoints % 5_000 != 0 || desiredChangePoints < 5_000 ) throw new ApiException(INVALID_POINT_UNIT); // 포인트 전환 단위는 최소 5,000원이며, 5,000원 단위로만 전환 가능.
+        member.convertPointsToAvailablePoints(desiredChangePoints);
     }
 
     /**
@@ -91,7 +104,7 @@ public class MemberService {
      */
     @Transactional
     public void deleteMember(Member member) {
-        member.deleteMemberStatus(LocalDateTime.now());
+        member.deleteMemberStatus();
     }
 
 }

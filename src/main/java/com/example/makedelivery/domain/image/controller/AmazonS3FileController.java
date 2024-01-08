@@ -15,6 +15,7 @@ import static com.example.makedelivery.common.constants.URIConstants.IMAGE_API_U
  * 해당 컨트롤러는 사실 꼭 필요한 컨트롤러는 아닙니다.
  * 그러나 파일 관련된 여러 로직이
  * 정상적으로 작동 하는지를 확인하기 위해 만든 컨트롤러입니다.
+ * 실제 현업에서는 이렇게 FileController 를 만들어 테스트를 하지는 않습니다. ( 자원 낭비 )
  */
 @RequiredArgsConstructor
 @RestController

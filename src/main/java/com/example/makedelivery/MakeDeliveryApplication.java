@@ -3,6 +3,7 @@ package com.example.makedelivery;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
@@ -20,10 +21,13 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
     @EnableScheduling: 이 어노테이션은 Spring 애플리케이션 내에서 스케줄링을 활성화합니다.
     스케줄링은 주기적으로 일정한 주기로 작업을 실행하도록 하는 기능을 활성화합니다.
     이 어노테이션을 사용하면 @Scheduled 어노테이션이 붙은 메서드들이 주기적으로 실행될 수 있습니다.
+    
+    @EnableJpaAuditing: 이 어노테이션은 생성일, 수정일을 자동으로 관리하기 위한 Auditing 을 활성화 시켜줍니다.
  */
 @SpringBootApplication
 @EnableScheduling
 @EnableCaching
+@EnableJpaAuditing
 @EnableRedisHttpSession
 public class MakeDeliveryApplication {
 

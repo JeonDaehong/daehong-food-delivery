@@ -12,6 +12,7 @@ public class MemberAddressResponse {
     private String address;
     private double longitude;
     private double latitude;
+    private int priority;
 
     public static MemberAddressResponse toMemberAddressResponse(MemberAddress memberAddress) {
         return MemberAddressResponse.builder()
@@ -19,6 +20,7 @@ public class MemberAddressResponse {
                 .address(memberAddress.getAddress())
                 .longitude(memberAddress.getLongitude())
                 .latitude(memberAddress.getLatitude())
+                .priority(memberAddress.getPriority())
                 .build();
     }
 

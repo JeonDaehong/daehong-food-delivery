@@ -24,6 +24,11 @@ public class MemberController {
     private final MemberService memberService;
     private final LoginService loginService;
 
+    /**
+     * RequestParam 과 RequestBody 의 차이
+     * RequestParam 은 기본 자료형이나 문자열 등의 단일 값 파라미터를 받을 때 사용하고,
+     * RequestBody 는 복잡한 객체나 데이터를 Java Object 형식으로 변환하여 보낼 때 사용합니다.
+     */
     @PostMapping("/join")
     public ResponseEntity<HttpStatus> join(@RequestBody @Valid MemberJoinRequest memberRequest) {
         // API 요청 상황에서 예기치 못한 상황이 있을 수 있으므로, 이메일 중복을 한 번 더 체크해 줌.

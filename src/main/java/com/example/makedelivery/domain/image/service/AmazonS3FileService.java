@@ -26,7 +26,7 @@ public class AmazonS3FileService implements FileService {
 
     public String defaultUrl = "https://s3.amazonaws.com/";
 
-    @Transactional(propagation = Propagation.MANDATORY)
+    @Transactional
     @Override
     public String uploadFile(MultipartFile file) throws IOException {
         String fileName = generateFileName(file);
@@ -34,9 +34,9 @@ public class AmazonS3FileService implements FileService {
         return defaultUrl + fileName;
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
+    @Transactional
     @Override
-    public void deleteFile(String fileName) throws IOException {
+    public void deleteFile(String fileName) {
         amazonS3Client.deleteObject(bucketName, fileName);
     }
 

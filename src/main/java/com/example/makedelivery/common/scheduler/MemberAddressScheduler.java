@@ -18,8 +18,10 @@ public class MemberAddressScheduler {
      * 회원정보나, 매장정보등은 스케쥴러가 아니라 운영자들이 직접 확인하고 삭제하게끔 설계하였습니다.
      * 반면 주소정보는 회원, 매장 정보에 비해 중요도가 낮고, 빠르게 데이터가 삭제되어도
      * 문제가 되지 않을 요소이기 때문에, 스케쥴러를 통하여 관리하도록 설계하였습니다.
+     * 또한, 스케쥴러가 타이밍 맞게 바로 돌아가면 문제가 생길 수 있으므로,
+     * Delete 상태가 된 지 24시간이 지난 데이터만 삭제합니다.
      */
-    @Scheduled(fixedDelay = 1000 * 60 * 10) // 10분에 한 번 실행
+    @Scheduled(fixedDelay = 1000 * 60 * 60) // 1시간에 한 번 실행
     public void deleteAllAddressDeleteStatus() {
         memberAddressService.deleteAllAddressDeleteStatus();
     }

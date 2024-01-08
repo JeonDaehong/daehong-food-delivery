@@ -30,8 +30,6 @@ public class CartOptionRequest {
                 .memberId(memberId)
                 .menuOptionId(request.getMenuOptionId())
                 .menuOptionName(request.getMenuOptionName())
-                .createDateTime(LocalDateTime.now())
-                .updateDateTime(LocalDateTime.now())
                 .build();
     }
 

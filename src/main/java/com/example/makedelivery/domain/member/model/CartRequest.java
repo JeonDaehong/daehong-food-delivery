@@ -33,6 +33,7 @@ public class CartRequest {
     @Min(value = 1, message = "개수는 1개 이상이어야 합니다.")
     private Integer count;
 
+    @Builder.Default
     List<CartOptionRequest> optionList = new ArrayList<>();
 
     public static Cart toEntity(CartRequest request, Long memberId) {
@@ -43,8 +44,6 @@ public class CartRequest {
                 .storeId(request.getStoreId())
                 .memberId(memberId)
                 .count(request.getCount())
-                .createDateTime(LocalDateTime.now())
-                .updateDateTime(LocalDateTime.now())
                 .build();
     }
 

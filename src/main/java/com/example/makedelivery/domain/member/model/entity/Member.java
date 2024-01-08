@@ -1,6 +1,7 @@
 package com.example.makedelivery.domain.member.model.entity;
 
 import com.example.makedelivery.common.annotation.LoginCheck.MemberLevel;
+import com.example.makedelivery.common.constants.DateEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -27,7 +28,7 @@ import java.time.LocalDateTime;
 @ToString
 @Table(name = "TB_MEMBER")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends DateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,15 +52,11 @@ public class Member {
     @Enumerated(value = EnumType.STRING)
     private Status status;
 
-    @Column(name = "MAIN_ADDRESS_ID")
-    private Long mainAddressId;
+    @Column(name = "POINT")
+    private Integer point;
 
-    @Column(name = "CRTE_DTTM")
-    private LocalDateTime createDateTime;
-
-    @Column(name = "UPDT_DTTM")
-    private LocalDateTime updateDateTime;
-
+    @Column(name = "AVAIL_POINT")
+    private Integer availablePoint;
 
     @Getter
     @RequiredArgsConstructor
@@ -74,34 +71,34 @@ public class Member {
 
     @Builder
     public Member(String email, String password, String nickname, MemberLevel memberLevel, Status status,
-                  Long mainAddressId, LocalDateTime createDateTime, LocalDateTime updateDateTime) {
+                  Integer point, Integer availablePoint) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.memberLevel = memberLevel;
         this.status = status;
-        this.mainAddressId = mainAddressId;
-        this.createDateTime = createDateTime;
-        this.updateDateTime = updateDateTime;
+        this.point = point;
+        this.availablePoint = availablePoint;
     }
 
-    public void updateProfile(String nickname, LocalDateTime updateDateTime) {
+    public void updateProfile(String nickname) {
         this.nickname = nickname;
-        this.updateDateTime = updateDateTime;
     }
 
-    public void updatePassword(String password, LocalDateTime updateDateTime) {
+    public void updatePassword(String password) {
         this.password = password;
-        this.updateDateTime = updateDateTime;
     }
 
-    public void updateMainAddress(Long addressId, LocalDateTime updateDateTime) {
-        this.mainAddressId = addressId;
-        this.updateDateTime = updateDateTime;
+    public void convertPointsToAvailablePoints(Integer changePoint) {
+        this.point -= changePoint;
+        this.availablePoint += changePoint;
     }
 
-    public void deleteMemberStatus(LocalDateTime updateDateTime) {
+    public void addPoint(Integer point) {
+        this.point += point;
+    }
+
+    public void deleteMemberStatus() {
         this.status = Status.DELETED;
-        this.updateDateTime = updateDateTime;
     }
 }
