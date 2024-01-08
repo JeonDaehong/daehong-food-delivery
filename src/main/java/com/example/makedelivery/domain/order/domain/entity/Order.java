@@ -38,13 +38,19 @@ public class Order extends DateEntity {
     @Enumerated(value = EnumType.STRING)
     private OrderStatus orderStatus;
 
+    @Column(name = "RIDER_ID")
+    private Long riderId;
+
+    @Version
+    private Long version;
+
     @Getter
     @RequiredArgsConstructor
     public enum OrderStatus {
         CANCEL_ORDER("주문 취소"),
         COMPLETE_ORDER("주문 완료"),
         APPROVED_ORDER("주문 승인"),
-        COOKING("조리 중"),
+        DELIVERY_WAIT("배송 대기 중"),
         DELIVERING("배송 중"),
         COMPLETE_DELIVERY("배송 완료");
 
@@ -72,8 +78,20 @@ public class Order extends DateEntity {
         this.orderStatus = OrderStatus.APPROVED_ORDER;
     }
 
-    public void changeOrderStatusCooking() {
-        this.orderStatus = OrderStatus.COOKING;
+    public void changeOrderStatusDeliveryWait() {
+        this.orderStatus = OrderStatus.DELIVERY_WAIT;
+    }
+
+    public void completedDelivery() { this.orderStatus = OrderStatus.COMPLETE_DELIVERY; }
+
+    public void registerRider(Long riderId) {
+        this.riderId = riderId;
+        this.orderStatus = OrderStatus.DELIVERING;
+    }
+
+    public void cancelRider() {
+        this.riderId = null;
+        this.orderStatus = OrderStatus.DELIVERY_WAIT;
     }
 
 }
