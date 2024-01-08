@@ -1,6 +1,7 @@
 package com.example.makedelivery.domain.member.service;
 
 import com.example.makedelivery.common.exception.ApiException;
+import com.example.makedelivery.common.exception.ExceptionEnum;
 import com.example.makedelivery.domain.member.model.CartOptionRequest;
 import com.example.makedelivery.domain.member.model.CartRequest;
 import com.example.makedelivery.domain.member.model.CartResponse;
@@ -9,6 +10,7 @@ import com.example.makedelivery.domain.member.model.entity.CartOption;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.member.repository.CartOptionRepository;
 import com.example.makedelivery.domain.member.repository.CartRepository;
+import com.example.makedelivery.domain.menu.domain.entity.Menu;
 import com.example.makedelivery.domain.menu.domain.entity.Option;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +40,43 @@ public class CartService {
     }
 
     /**
+     * 요청한 메뉴, 옵션이 모두 일치한 메뉴가 장바구니에 담겨있는지
+     * 확인해주는 메서드입니다.
+     */
+    private boolean isMenuAlreadyInCart(Member member, CartRequest request) {
+        Optional<Cart> myCartOptional = cartRepository.findCartByMenuIdAndMemberId(request.getMenuId(), member.getId());
+
+        return myCartOptional.filter(myCart -> {
+                    long optionCount = request.getOptionList().stream()
+                            .filter(optionRequest -> cartOptionRepository.findCartOptionByMenuOptionIdAndCartId(optionRequest.getMenuOptionId(), myCart.getId()).isPresent())
+                            .count();
+                    return optionCount == request.getOptionList().size();
+                })
+                .isPresent();
+    }
+
+    /**
+     * 같은 메뉴+옵션이 모두 일치하는 장바구니가 없을 경우, 새롭게 추가해줍니다.
+     */
+    private void addNewCart(Member member, CartRequest request) {
+        Cart newCart = cartRepository.save(CartRequest.toEntity(request, member.getId()));
+
+        request.getOptionList().forEach(optionRequest -> {
+            CartOption cartOption = CartOptionRequest.toEntity(optionRequest, newCart.getId(), member.getId());
+            cartOptionRepository.save(cartOption);
+        });
+    }
+
+    /**
+     * 같은 메뉴+옵션이 모두 일치하는 메뉴가 담겨있을 경우 Count 를 1 상승 해줍니다.
+     */
+    private void increaseCartItemCount(Member member, CartRequest request) {
+        Optional<Cart> cartOptional = cartRepository.findCartByMenuIdAndMemberId(request.getMenuId(), member.getId());
+        cartOptional.ifPresent(Cart::countUp);
+    }
+
+
+    /**
      * 장바구니에 A 매장 메뉴가 들어가있으면,
      * 다른 매장 메뉴는 담을 수 없게 설계하고, 개발하였습니다.
      * 그 이유는, 한 번에 여러 매장에서 일괄 주문을 진행 할 경우
@@ -48,20 +87,14 @@ public class CartService {
      */
     @Transactional
     public void addCart(Member member, CartRequest request) {
-        // 장바구니에는 같은 매장의 메뉴만 담을 수 있습니다.
-        validateCartStoreMatching(member.getId(), request.getStoreId());
-        Long cartId = cartRepository.save(CartRequest.toEntity(request, member.getId())).getId();
-        // 옵션이 있을 경우, 옵션도 장바구니에 담아줍니다.
-        for ( CartOptionRequest cartOptionRequest : request.getOptionList() ) {
-            CartOption cartOption = CartOptionRequest.toEntity(cartOptionRequest, cartId, member.getId());
-            cartOptionRepository.save(cartOption);
+        validateCartStoreMatching(member.getId(), request.getStoreId()); // 장바구니에는 같은 매장의 메뉴만 담을 수 있습니다.
+        if ( isMenuAlreadyInCart(member, request) ) {
+            addNewCart(member, request);
+        } else {
+            increaseCartItemCount(member, request);
         }
     }
 
-    /**
-     * 더 빠르게 읽기 위하여,
-     * 장바구니의 내용을 캐싱합니다.
-     */
     @Cacheable(key = "#member.getId()", value = "cartList")
     @Transactional(readOnly = true)
     public List<CartResponse> loadCart(Member member) {
