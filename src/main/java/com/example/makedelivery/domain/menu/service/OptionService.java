@@ -24,9 +24,16 @@ public class OptionService {
 
     /**
      * 에러를 반환하는 공통 코드를 하나의 함수로 통일하였습니다. ( 중복되므로 )
+     * 또한 내부에서만 사용되므로, private 로 선언하였습니다.
      */
     private Option findOptionByIdAndMenuId(Long optionId, Long menuId) {
         return optionRepository.findOptionByIdAndMenuId(optionId, menuId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.OPTN_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public Option findOptionById(Long optionId) {
+        return optionRepository.findOptionById(optionId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.OPTN_NOT_FOUND));
     }
 
