@@ -72,4 +72,12 @@ public class Option extends DateEntity {
         this.status = Status.DELETED;
     }
 
+    public boolean isDeletedCheck() {
+        return this.status.equals(Status.DELETED);
+    }
+
+    public boolean isHiddenCheck() {
+        return this.status.equals(Status.HIDDEN);
+    }
+
 }
