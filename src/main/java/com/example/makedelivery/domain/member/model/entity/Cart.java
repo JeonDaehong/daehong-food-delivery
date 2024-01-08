@@ -51,4 +51,8 @@ public class Cart extends DateEntity {
         this.count = count;
     }
 
+    public void countUp() {
+        this.count ++;
+    }
+
 }
