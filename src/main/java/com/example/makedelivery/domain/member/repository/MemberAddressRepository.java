@@ -15,6 +15,8 @@ public interface MemberAddressRepository extends JpaRepository<MemberAddress, Lo
 
     Optional<MemberAddress> findMemberAddressesByIdAndMemberIdAndStatus(Long id, Long memberId, Status status);
 
+    Optional<MemberAddress> findMemberAddressesById(Long id);
+
     Optional<List<MemberAddress>> findAllByMemberIdAndStatusOrderByPriority(Long memberId, Status status);
 
     @Query("SELECT COALESCE(MAX(e.priority), 0) FROM MemberAddress e " +
