@@ -2,7 +2,7 @@
 
 ![logo](https://github.com/JeonDaehong/daehong-food-delivery/assets/90895144/dfcdfbd0-52c6-48f5-aa21-5a491284ec4f)
 
-## 1. 개발 주요 로직
+## 1. 개발 주요 로직 & 주요 이슈 해결 목록
 
 **`클릭 시, 개발 내용을 정리한 개인 블로그 내용으로 이동합니다.`**
 
