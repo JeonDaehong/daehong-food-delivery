@@ -24,9 +24,16 @@ public class OptionService {
 
     /**
      * 에러를 반환하는 공통 코드를 하나의 함수로 통일하였습니다. ( 중복되므로 )
+     * 또한 내부에서만 사용되므로, private 로 선언하였습니다.
      */
     private Option findOptionByIdAndMenuId(Long optionId, Long menuId) {
         return optionRepository.findOptionByIdAndMenuId(optionId, menuId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.OPTN_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public Option findOptionById(Long optionId) {
+        return optionRepository.findOptionById(optionId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.OPTN_NOT_FOUND));
     }
 
@@ -40,26 +47,25 @@ public class OptionService {
     public void updateOption(OptionRequest request, Long menuId, Long optionId) {
         Option option = findOptionByIdAndMenuId(optionId, menuId);
         option.updateOptionInfo(request.getName(),
-                                request.getPrice(),
-                                LocalDateTime.now());
+                                request.getPrice());
     }
 
     @Transactional
     public void deleteOption(Long menuId, Long optionId) {
         Option option = findOptionByIdAndMenuId(optionId, menuId);
-        option.deleteMenu(LocalDateTime.now());
+        option.deleteMenu();
     }
 
     @Transactional
     public void changeStatusHidden(Long menuId, Long optionId) {
         Option option = findOptionByIdAndMenuId(optionId, menuId);
-        option.changeStatusHidden(LocalDateTime.now());
+        option.changeStatusHidden();
     }
 
     @Transactional
     public void changeStatusDefault(Long menuId, Long optionId) {
         Option option = findOptionByIdAndMenuId(optionId, menuId);
-        option.changeStatusDefault(LocalDateTime.now());
+        option.changeStatusDefault();
     }
 
     @Transactional(readOnly = true)
@@ -73,7 +79,7 @@ public class OptionService {
 
     @Transactional
     public void deleteAllOptionDeleteStatus() {
-        optionRepository.deleteAllByStatus(Status.DELETED);
+        optionRepository.deleteAllByStatusAndUpdateDateTime24Hour(Status.DELETED, LocalDateTime.now().minusHours(24));
     }
 
 }

@@ -9,6 +9,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
+/**
+ * Request, Response 객체 파일에 있던 @NoArgsConstructor 와 @AllArgsConstructor 를
+ * 삭제하고, @Getter 와 @Builder 만 남겼습니다.
+ * 특별한 이유가 없다면, @AllArgsConstructor 를 지양해야 하는 이유는
+ * 개발자가 필드 생성자의 순서를 바꿔줄 경우 적용되는 값이 완전히 바뀔 수 있으며, @Setter 를 사용한것과 같은 문제가 생길 수 있기 때문입니다.
+ * 그리고 @Builder 를 사용할 경우 굳이 @NoArgsConstructor 가 필요하지 않기 때문에 수정하였습니다.
+ */
 @Getter
 @Builder
 public class MemberJoinRequest {
@@ -37,8 +44,8 @@ public class MemberJoinRequest {
                 .nickname(request.getNickname())
                 .memberLevel(request.memberLevel)
                 .status(Status.DEFAULT)
-                .createDateTime(LocalDateTime.now())
-                .updateDateTime(LocalDateTime.now())
+                .point(0)
+                .availablePoint(0)
                 .build();
     }
 

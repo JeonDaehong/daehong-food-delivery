@@ -21,15 +21,14 @@ public class MemberAddressRequest {
     @NotNull(message = "위도는 공란일 수 없습니다.")
     private Double latitude;
 
-    public static MemberAddress toEntity(MemberAddressRequest request, Long memberId) {
+    public static MemberAddress toEntity(MemberAddressRequest request, Long memberId, Integer priority) {
         return MemberAddress.builder()
                 .address(request.getAddress())
                 .longitude(request.getLongitude())
                 .latitude(request.getLatitude())
                 .memberId(memberId)
                 .status(Status.DEFAULT) // 기본 상태
-                .createDateTime(LocalDateTime.now())
-                .updateDateTime(LocalDateTime.now())
+                .priority(priority)
                 .build();
     }
 

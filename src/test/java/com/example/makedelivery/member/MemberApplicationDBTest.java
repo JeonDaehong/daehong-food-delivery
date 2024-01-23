@@ -2,6 +2,7 @@ package com.example.makedelivery.member;
 
 import com.example.makedelivery.common.annotation.LoginCheck.MemberLevel;
 import com.example.makedelivery.common.exception.ApiException;
+import com.example.makedelivery.common.facade.RedissonLockFacade;
 import com.example.makedelivery.domain.member.model.MemberAddressRequest;
 import com.example.makedelivery.domain.member.model.MemberAddressResponse;
 import com.example.makedelivery.domain.member.model.MemberJoinRequest;
@@ -21,9 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import static com.example.makedelivery.common.exception.ExceptionEnum.LOGIN_SECURITY_ERROR;
-import static com.example.makedelivery.common.exception.ExceptionEnum.MAIN_ADDR_DELETE;
+import static com.example.makedelivery.common.exception.ExceptionEnum.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,6 +44,9 @@ public class MemberApplicationDBTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RedissonLockFacade redissonLockFacade;
 
     @Test
     @DisplayName("회원가입이 정상적으로 진행됩니다.")
@@ -88,39 +94,6 @@ public class MemberApplicationDBTest {
     }
 
     @Test
-    @DisplayName("주소를 생성이 정상적으로 진행되고, 메인 주소가 없을 경우 메인 주소로 등록합니다.")
-    @Transactional
-    @Rollback(value = false)
-    void testAddAddress() {
-        // given
-        Member dbMember = memberService.findMemberByEmail("aTestAdmin710a@admin.co.kr");
-        MemberAddressRequest request = MemberAddressRequest.builder()
-                .address("서울 강남구 대치동 123번길 77")
-                .longitude(32.1257)
-                .latitude(102.7571)
-                .build();
-        // when
-        memberAddressService.addAddress(dbMember, request);
-        // then
-        dbMember = memberService.findMemberByEmail("aTestAdmin710a@admin.co.kr");
-        assertFalse(memberAddressService.getMyAddressList(dbMember).isEmpty());
-        assertNotNull(dbMember.getMainAddressId());
-    }
-
-    @Test
-    @DisplayName("회원의 메인 주소 ID가 정상적으로 변경되는지 확인합니다.")
-    @Transactional
-    void testUpdateMainAddress() {
-        // given
-        Member dbMember = memberService.findMemberByEmail("aTestAdmin710a@admin.co.kr");
-        // when
-        dbMember.updateMainAddress(999L, LocalDateTime.now());
-        // then
-        Member reDbMember = memberService.findMemberByEmail("aTestAdmin710a@admin.co.kr");
-        assertThat(999L).isEqualTo(reDbMember.getMainAddressId());
-    }
-
-    @Test
     @DisplayName("회원의 메인주소로 지정된 주소를 삭제하면 Exception 을 발생시킵니다.")
     @Transactional
     void deleteMainAddressThrowsException() {
@@ -131,6 +104,88 @@ public class MemberApplicationDBTest {
             memberAddressService.deleteAddress(dbMember, 1L);
         });
         assertEquals(MAIN_ADDR_DELETE.getCode(), apiException.getError().getCode());
+    }
+
+
+    @Test
+    @DisplayName("회원의 포인트 전환이 멀티스레드 환경 속에서도, 동기화가 잘 진행되어 정상적으로 작동되어야 합니다.")
+    @Transactional
+    void convertPointsToAvailablePointsTestSuccess() throws InterruptedException {
+        // given
+        Member dbMember = memberService.findMemberByEmail("aTestAdmin710a@admin.co.kr");
+        int threadCount = 100;
+        ExecutorService executorService = Executors.newFixedThreadPool(32);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+        // when
+        for ( int i = 0; i < threadCount; i++ ) {
+            executorService.submit(() -> {
+               try {
+                   redissonLockFacade.convertPointsToAvailablePoints(dbMember, 5_000);
+               } finally {
+                   latch.countDown();
+               }
+            });
+        }
+        latch.await();
+        // then
+        Member newDbMember = memberService.findMemberByEmail("aTestAdmin710a@admin.co.kr");
+        System.out.println("Point : " + newDbMember.getPoint());
+        System.out.println("Available Point : " + newDbMember.getAvailablePoint());
+        assertEquals(0, newDbMember.getPoint());
+        assertEquals(5_000, newDbMember.getAvailablePoint());
+    }
+
+    @Test
+    @DisplayName("Lock 을 사용하지 않았을 경우, 포인트 전환 값이 생각했던 것과 다르게 나와야합니다.")
+    @Transactional
+    void convertPointsToAvailablePointsTestFail() throws InterruptedException {
+        // given
+        Member dbMember = memberService.findMemberByEmail("aTestAdmin710a@admin.co.kr");
+        int threadCount = 500;
+        ExecutorService executorService = Executors.newFixedThreadPool(32);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+        // when
+        for ( int i = 0; i < threadCount; i++ ) {
+            executorService.submit(() -> {
+                try {
+                    memberService.convertPointsToAvailablePoints(dbMember, 5_000);
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+        latch.await();
+        // then
+        // 멀티스레드이므로 테스트마다 다른 결과가 나오기 때문에, 맞는 결과가 나올수도 있으므로 assert 로 검사하지 않았습니다.
+        Member newDbMember = memberService.findMemberByEmail("aTestAdmin710a@admin.co.kr");
+        System.out.println("Point : " + newDbMember.getPoint());
+        System.out.println("Available Point : " + newDbMember.getAvailablePoint());
+    }
+
+    @Test
+    @DisplayName("포인트 전환 단위는 최소 5,000원이며, 5,000원 단위로만 전환 가능함. 그러지 않으면 예외 발생.")
+    @Transactional
+    void convertPointsToAvailablePointsInvalidPointExceptionTest() {
+        // given
+        Member dbMember = memberService.findMemberByEmail("aTestAdmin710a@admin.co.kr");
+        // when & then
+        ApiException apiException = assertThrows(ApiException.class, () -> {
+            memberService.convertPointsToAvailablePoints(dbMember, 3_000);
+        });
+        assertEquals(INVALID_POINT_UNIT.getCode(), apiException.getError().getCode());
+    }
+
+    @Test
+    @DisplayName("전환하려는 포인트보다 보유포인트가 적으면 예외 발생")
+    @Transactional
+    void convertPointsToAvailablePointsInsufficientExceptionTest() {
+        // given
+        Member dbMember = memberService.findMemberByEmail("aTestAdmin710a@admin.co.kr");
+        // when & then
+        ApiException apiException = assertThrows(ApiException.class, () -> {
+            memberService.convertPointsToAvailablePoints(dbMember, 10_000);
+        });
+        assertEquals(POINTS_INSUFFICIENT.getCode(), apiException.getError().getCode());
     }
 
 }

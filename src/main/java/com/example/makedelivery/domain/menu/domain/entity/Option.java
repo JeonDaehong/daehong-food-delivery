@@ -1,16 +1,18 @@
 package com.example.makedelivery.domain.menu.domain.entity;
 
+import com.example.makedelivery.common.constants.DateEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Getter
 @ToString
 @Table(name = "TB_OPTN")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Option {
+public class Option extends DateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,12 +32,6 @@ public class Option {
     @Enumerated(value = EnumType.STRING)
     private Status status;
 
-    @Column(name = "CRTE_DTTM")
-    private LocalDateTime createDateTime;
-
-    @Column(name = "UPDT_DTTM")
-    private LocalDateTime updateDateTime;
-
     @Getter
     @RequiredArgsConstructor
     public enum Status {
@@ -48,38 +44,40 @@ public class Option {
 
     @Builder
     public Option(String name, Integer price, Long menuId,
-                  Status status, LocalDateTime createDateTime, LocalDateTime updateDateTime) {
+                  Status status) {
         this.name = name;
         this.price = price;
         this.menuId = menuId;
         this.status = status;
-        this.createDateTime = createDateTime;
-        this.updateDateTime = updateDateTime;
     }
 
     /**
      * 메뉴 정보 안에서 옵션을 생성하거나 수정하므로,
      * 해당 옵션에 대한 메뉴( MENU_ID ) 는 변경 할 수 없습니다.
      */
-    public void updateOptionInfo(String name, Integer price, LocalDateTime updateDateTime) {
+    public void updateOptionInfo(String name, Integer price) {
         this.name = name;
         this.price = price;
-        this.updateDateTime = updateDateTime;
     }
 
-    public void changeStatusHidden(LocalDateTime updateDateTime) {
+    public void changeStatusHidden() {
         this.status = Status.HIDDEN;
-        this.updateDateTime = updateDateTime;
     }
 
-    public void changeStatusDefault(LocalDateTime updateDateTime) {
+    public void changeStatusDefault() {
         this.status = Status.DEFAULT;
-        this.updateDateTime = updateDateTime;
     }
 
-    public void deleteMenu(LocalDateTime updateDateTime) {
+    public void deleteMenu() {
         this.status = Status.DELETED;
-        this.updateDateTime = updateDateTime;
+    }
+
+    public boolean isDeletedCheck() {
+        return this.status.equals(Status.DELETED);
+    }
+
+    public boolean isHiddenCheck() {
+        return this.status.equals(Status.HIDDEN);
     }
 
 }

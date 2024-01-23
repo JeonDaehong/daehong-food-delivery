@@ -33,9 +33,13 @@ public class MenuService {
     private final MenuGroupRepository menuGroupRepository;
 
     /**
-     * 에러를 반환하는 공통 코드를 하나의 함수로 통일하였습니다. ( 중복되므로 )
+     * MenuService 내에서만 사용한다면, private 로 선언을 하였겠지만,
+     * 해당 메서드는 외부에서도 사용될 수 있으므로 public 으로 선언하였습니다. ( OrderService 에서 불러옴 )
+     * 단, 내부 서비스에서 이 메서드가 불려올 경우에는
+     * self-invocation 으로 @Transactional(readOnly = true) 은 동작하지 않습니다.
      */
-    private Menu getMenuByIdOrThrowException(Long menuId) {
+    @Transactional(readOnly = true)
+    public Menu getMenuById(Long menuId) {
         return menuRepository.findMenuById(menuId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.MENU_NOT_FOUND));
     }
@@ -48,37 +52,36 @@ public class MenuService {
 
     @Transactional
     public void updateMenuInformation(Long menuId, MenuRequest request) {
-        Menu menu = getMenuByIdOrThrowException(menuId);
+        Menu menu = getMenuById(menuId);
         menu.updateMenuInfo(request.getName(),
                 request.getDescription(),
                 request.getPrice(),
-                request.getMenuGroupId(),
-                LocalDateTime.now());
+                request.getMenuGroupId());
     }
 
     @Transactional
     public void updateMenuImage(Long menuId, String imageFileName) {
-        Menu menu = getMenuByIdOrThrowException(menuId);
-        menu.updateMenuImage(imageFileName, LocalDateTime.now());
+        Menu menu = getMenuById(menuId);
+        menu.updateMenuImage(imageFileName);
     }
 
     @Transactional
     public void deleteMenu(Long menuId) {
-        Menu menu = getMenuByIdOrThrowException(menuId);
-        menu.deleteMenu(LocalDateTime.now());
+        Menu menu = getMenuById(menuId);
+        menu.deleteMenu();
     }
 
     @Transactional
     public void changeStatusHidden(Long menuId) {
-        Menu menu = getMenuByIdOrThrowException(menuId);
-        menu.changeStatusHidden(LocalDateTime.now());
+        Menu menu = getMenuById(menuId);
+        menu.changeStatusHidden();
 
     }
 
     @Transactional
     public void changeStatusDefault(Long menuId) {
-        Menu menu = getMenuByIdOrThrowException(menuId);
-        menu.changeStatusDefault(LocalDateTime.now());
+        Menu menu = getMenuById(menuId);
+        menu.changeStatusDefault();
 
     }
 
@@ -105,7 +108,7 @@ public class MenuService {
                 .orElse(List.of())
                 .stream()
                 .map(menu -> {
-                    String awsImagePathURL = fileService.getFilePath(menu.getImageFileName());
+                    String awsImagePathURL = fileService.getFilePath(menu.getImageFileName()); // AWS S3에 저장된 메뉴의 이미지 URL 을 가져옵니다.
                     return MenuResponse.toMenuResponse(menu, awsImagePathURL);
                 })
                 .toList();
@@ -119,7 +122,7 @@ public class MenuService {
      */
     @Transactional
     public void deleteAllMenuDeleteStatus() {
-        menuRepository.deleteAllByStatus(Menu.Status.DELETED);
+        menuRepository.deleteAllByStatusAndUpdateDateTime24Hour(Menu.Status.DELETED, LocalDateTime.now().minusHours(24));
     }
 
 }

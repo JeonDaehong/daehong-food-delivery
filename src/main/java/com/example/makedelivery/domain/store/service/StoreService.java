@@ -1,6 +1,7 @@
 package com.example.makedelivery.domain.store.service;
 
 import com.example.makedelivery.common.exception.ApiException;
+import com.example.makedelivery.domain.image.service.FileService;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.store.model.StoreInfoUpdateRequest;
 import com.example.makedelivery.domain.store.model.StoreInsertRequest;
@@ -14,6 +15,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ import static com.example.makedelivery.common.exception.ExceptionEnum.*;
 @Slf4j
 public class StoreService {
 
+    private final FileService fileService; // AWS S3 Upload & getFileURL
+
     private final StoreRepository storeRepository;
 
     private Store findMyStore(Long storeId, Member member) {
@@ -35,11 +39,17 @@ public class StoreService {
                 .orElseThrow(() -> new ApiException(STORE_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
+    public Store findThisStore(Long storeId) {
+        return storeRepository.findStoreById(storeId)
+                .orElseThrow(() -> new ApiException(STORE_NOT_FOUND));
+    }
+
     @Transactional
-    public void addStore(StoreInsertRequest request, Member member) {
+    public void addStore(StoreInsertRequest request, Member member, String imageFileName) {
         // 같은 이름의 매장은 등록할 수 없습니다.
         if ( storeRepository.existsByName(request.getName()) ) throw new ApiException(DUPLICATED_STORE_NAME);
-        Store store = StoreInsertRequest.toEntity(request, member.getId());
+        Store store = StoreInsertRequest.toEntity(request, member.getId(), imageFileName);
         storeRepository.save(store);
     }
 
@@ -57,27 +67,31 @@ public class StoreService {
                 .findAllByOwnerIdAndStatusOrderByName(member.getId(), Status.DEFAULT)
                 .orElse(List.of())
                 .stream()
-                .map(StoreResponse::toStoreResponse)
+                .map(store -> {
+                    String awsImagePathURL = fileService.getFilePath(store.getImageFileName());
+                    return StoreResponse.toStoreResponse(store, awsImagePathURL);
+                })
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public StoreResponse getMyStore(Long storeId, Member member) {
         Store myStore = findMyStore(storeId, member);
-        return StoreResponse.toStoreResponse(myStore);
+        String awsImagePathURL = fileService.getFilePath(myStore.getImageFileName());
+        return StoreResponse.toStoreResponse(myStore, awsImagePathURL);
 
     }
 
     @Transactional
     public void openMyStore(Long storeId, Member member) {
         Store myStore = findMyStore(storeId, member);
-        myStore.openStore(LocalDateTime.now());
+        myStore.openStore();
     }
 
     @Transactional
     public void closeMyStore(Long storeId, Member member) {
         Store myStore = findMyStore(storeId, member);
-        myStore.closeStore(LocalDateTime.now());
+        myStore.closeStore();
     }
 
     @Transactional
@@ -88,8 +102,13 @@ public class StoreService {
                                 request.getAddress(),
                                 request.getLongitude(),
                                 request.getLatitude(),
-                                request.getIntroduction(),
-                                LocalDateTime.now());
+                                request.getIntroduction());
+    }
+
+    @Transactional
+    public void updateStoreImage(Long storeId, Member member, String newImageName) {
+        Store myStore = findMyStore(storeId, member);
+        myStore.updateStoreImage(newImageName);
     }
 
     /**
@@ -104,6 +123,6 @@ public class StoreService {
     @CacheEvict(value = "storeList", allEntries = true)
     public void deleteStore(Long storeId, Member member) {
         Store myStore = findMyStore(storeId, member);
-        myStore.deleteStoreStatus(LocalDateTime.now());
+        myStore.deleteStoreStatus();
     }
 }

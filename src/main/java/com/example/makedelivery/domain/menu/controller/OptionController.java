@@ -81,7 +81,8 @@ public class OptionController {
 
     /**
      * 해당 메뉴의 옵션은, 메뉴 그룹에 메뉴가 담겨오는 것과는 다르게,
-     * 해당 메뉴 정보를 들어간 후에, 메뉴에 적용 가능한 옵션 리스트를 확인할 수 있습니다.
+     * 해당 메뉴 정보를 들어간 후에, 메뉴에 적용 가능한 옵션 리스트를 확인할 수 있도록 설계하였습니다.
+     * 그래서 MenuResponse 안에 List<OptionResponse> 를 담지 않았습니다.
      */
     @GetMapping
     public ResponseEntity<List<OptionResponse>> getMenuOptions(@PathVariable Long storeId,
