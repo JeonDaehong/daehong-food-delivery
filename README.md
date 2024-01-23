@@ -45,6 +45,7 @@
 <br>
 
 ## 4. 사용 기술 스택
+![image](https://github.com/JeonDaehong/daehong-food-delivery/assets/90895144/8f93b3f7-c059-40c8-81df-0a2757b45585)
 
 <br>
 
