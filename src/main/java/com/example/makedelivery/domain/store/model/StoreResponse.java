@@ -2,14 +2,19 @@ package com.example.makedelivery.domain.store.model;
 
 import com.example.makedelivery.domain.store.model.entity.Store;
 import com.example.makedelivery.domain.store.model.entity.Store.OpenStatus;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Builder
 @Getter
+@ToString
 public class StoreResponse {
 
     private Long id;
@@ -23,6 +28,7 @@ public class StoreResponse {
     private Double longitude;
     private Double latitude;
     private String awsImagePathURL;
+
 
     public static StoreResponse toStoreResponse(Store store, String awsImagePathURL) {
         return StoreResponse.builder()
