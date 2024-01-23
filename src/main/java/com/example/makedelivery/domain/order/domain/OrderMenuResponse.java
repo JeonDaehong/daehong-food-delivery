@@ -4,6 +4,7 @@ import com.example.makedelivery.domain.order.domain.entity.OrderMenu;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -14,7 +15,9 @@ public class OrderMenuResponse {
     private String menuName;
     private Integer menuPrice;
     private Integer menuCount;
-    private List<OrderMenuOptionResponse> menuOptionList;
+
+    @Builder.Default
+    private List<OrderMenuOptionResponse> menuOptionList = new ArrayList<>();
 
     public static OrderMenuResponse toOrderMenuResponse(OrderMenu orderMenu, String menuName, List<OrderMenuOptionResponse> menuOptionList) {
         return OrderMenuResponse.builder()
