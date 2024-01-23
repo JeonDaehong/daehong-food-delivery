@@ -20,7 +20,9 @@ public class PaymentServiceFactory {
     private final KakaoPaymentService kakaoPaymentService;
     private final TossPaymentService tossPaymentService;
 
+    // 추후 다른 결제 방식이 추가 될 수 있습니다.
     public PaymentService getPaymentService(PaymentType type) {
+
         PaymentService paymentService;
 
         switch (type) {
