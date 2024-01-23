@@ -14,5 +14,5 @@
 
 #### 4. [테스트 코드 작성 시 @Transactional 사용에 대하여 고민하고 테스트 코드 작성](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%BD%94%EB%93%9C-%EC%9E%91%EC%84%B1-%EC%8B%9C-Transactional-%EC%96%B4%EB%85%B8%ED%85%8C%EC%9D%B4%EC%85%98%EC%9D%84-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EA%B2%83%EC%97%90-%EB%8C%80%ED%95%9C-%EC%A7%A7%EC%9D%80-%EC%83%9D%EA%B0%81)
 
-#### 5. 낙관적 Lock 을 사용할 때 테스트 코드나, Facade 에 @Transactional 을 사용하면 안되는 이유
+#### 5. [낙관적 Lock 을 사용할 때 테스트 코드나, Facade 에 @Transactional 을 사용하면 안되는 이유](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-%EB%82%99%EA%B4%80%EC%A0%81-Lock-%EC%97%90%EC%84%9C-Transacional-%EC%9D%84-%EC%82%AC%EC%9A%A9%ED%95%98%EB%A9%B4-%EC%95%88%EB%90%98%EB%8A%94-%EC%9D%B4%EC%9C%A0-Lock-%EC%9D%84-%ED%86%B5%ED%95%9C-%EB%9D%BC%EC%9D%B4%EB%8D%94-%EB%B0%B0%EC%B0%A8-%EC%84%9C%EB%B9%84%EC%8A%A4-%EA%B0%9C%EB%B0%9C)
 
