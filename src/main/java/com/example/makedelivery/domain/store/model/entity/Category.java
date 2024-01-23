@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Table(name = "TB_CATEGORY")
+@Table(name = "TB_STORE_CATEGORY")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category extends DateEntity {
 
