@@ -1,0 +1,65 @@
+[2023-12-04 22:46:35.246] [INFO ] [background-preinit] org.hibernate.validator.internal.util.Version HV000001: Hibernate Validator 8.0.1.Final
+[2023-12-04 22:46:35.276] [INFO ] [main] com.example.makedelivery.MakeDeliveryApplication Starting MakeDeliveryApplication using Java 17.0.9 with PID 15500 (D:\make-delivery\make-delivery\build\classes\java\main started by user in D:\make-delivery\make-delivery)
+[2023-12-04 22:46:35.276] [INFO ] [main] com.example.makedelivery.MakeDeliveryApplication The following 1 profile is active: "aws"
+[2023-12-04 22:46:35.687] [INFO ] [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate Multiple Spring Data modules found, entering strict repository configuration mode
+[2023-12-04 22:46:35.688] [INFO ] [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2023-12-04 22:46:35.701] [INFO ] [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate Finished Spring Data repository scanning in 8 ms. Found 0 JPA repository interfaces.
+[2023-12-04 22:46:35.710] [INFO ] [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate Multiple Spring Data modules found, entering strict repository configuration mode
+[2023-12-04 22:46:35.711] [INFO ] [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[2023-12-04 22:46:35.718] [INFO ] [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate Finished Spring Data repository scanning in 1 ms. Found 0 Redis repository interfaces.
+[2023-12-04 22:46:36.102] [INFO ] [main] org.springframework.boot.web.embedded.tomcat.TomcatWebServer Tomcat initialized with port 8080 (http)
+[2023-12-04 22:46:36.103] [INFO ] [main] org.apache.catalina.core.AprLifecycleListener An older version [1.2.34] of the Apache Tomcat Native library is installed, while Tomcat recommends a minimum version of [2.0.5]
+[2023-12-04 22:46:36.103] [INFO ] [main] org.apache.catalina.core.AprLifecycleListener Loaded Apache Tomcat Native library [1.2.34] using APR version [1.7.0].
+[2023-12-04 22:46:36.105] [INFO ] [main] org.apache.catalina.core.AprLifecycleListener OpenSSL successfully initialized [OpenSSL 1.1.1o  3 May 2022]
+[2023-12-04 22:46:36.110] [INFO ] [main] org.apache.coyote.http11.Http11NioProtocol Initializing ProtocolHandler ["http-nio-8080"]
+[2023-12-04 22:46:36.111] [INFO ] [main] org.apache.catalina.core.StandardService Starting service [Tomcat]
+[2023-12-04 22:46:36.111] [INFO ] [main] org.apache.catalina.core.StandardEngine Starting Servlet engine: [Apache Tomcat/10.1.16]
+[2023-12-04 22:46:36.155] [INFO ] [main] org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] Initializing Spring embedded WebApplicationContext
+[2023-12-04 22:46:36.155] [INFO ] [main] org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext Root WebApplicationContext: initialization completed in 852 ms
+[2023-12-04 22:46:36.234] [INFO ] [main] com.zaxxer.hikari.HikariDataSource HikariPool-1 - Starting...
+[2023-12-04 22:46:36.332] [INFO ] [main] com.zaxxer.hikari.pool.HikariPool HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7781263c
+[2023-12-04 22:46:36.334] [INFO ] [main] com.zaxxer.hikari.HikariDataSource HikariPool-1 - Start completed.
+[2023-12-04 22:46:36.361] [INFO ] [main] org.hibernate.jpa.internal.util.LogHelper HHH000204: Processing PersistenceUnitInfo [name: default]
+[2023-12-04 22:46:36.398] [INFO ] [main] org.hibernate.Version HHH000412: Hibernate ORM core version 6.3.1.Final
+[2023-12-04 22:46:36.422] [INFO ] [main] org.hibernate.cache.internal.RegionFactoryInitiator HHH000026: Second-level cache disabled
+[2023-12-04 22:46:36.584] [INFO ] [main] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo No LoadTimeWeaver setup: ignoring JPA class transformer
+[2023-12-04 22:46:36.834] [INFO ] [main] org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+[2023-12-04 22:46:36.837] [INFO ] [main] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2023-12-04 22:46:37.040] [WARN ] [main] org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+[2023-12-04 22:46:37.275] [INFO ] [main] org.apache.coyote.http11.Http11NioProtocol Starting ProtocolHandler ["http-nio-8080"]
+[2023-12-04 22:46:37.290] [INFO ] [main] org.springframework.boot.web.embedded.tomcat.TomcatWebServer Tomcat started on port 8080 (http) with context path ''
+[2023-12-04 22:46:37.295] [INFO ] [main] com.example.makedelivery.MakeDeliveryApplication Started MakeDeliveryApplication in 2.344 seconds (process running for 2.882)
+[2023-12-04 22:47:06.214] [INFO ] [SpringApplicationShutdownHook] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean Closing JPA EntityManagerFactory for persistence unit 'default'
+[2023-12-04 22:47:06.215] [INFO ] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource HikariPool-1 - Shutdown initiated...
+[2023-12-04 22:47:06.220] [INFO ] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource HikariPool-1 - Shutdown completed.
+[2023-12-04 22:47:08.281] [INFO ] [background-preinit] org.hibernate.validator.internal.util.Version HV000001: Hibernate Validator 8.0.1.Final
+[2023-12-04 22:47:08.308] [INFO ] [main] com.example.makedelivery.MakeDeliveryApplication Starting MakeDeliveryApplication using Java 17.0.9 with PID 23708 (D:\make-delivery\make-delivery\build\classes\java\main started by user in D:\make-delivery\make-delivery)
+[2023-12-04 22:47:08.308] [INFO ] [main] com.example.makedelivery.MakeDeliveryApplication The following 1 profile is active: "aws"
+[2023-12-04 22:47:08.708] [INFO ] [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate Multiple Spring Data modules found, entering strict repository configuration mode
+[2023-12-04 22:47:08.710] [INFO ] [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2023-12-04 22:47:08.722] [INFO ] [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate Finished Spring Data repository scanning in 8 ms. Found 0 JPA repository interfaces.
+[2023-12-04 22:47:08.731] [INFO ] [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate Multiple Spring Data modules found, entering strict repository configuration mode
+[2023-12-04 22:47:08.732] [INFO ] [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[2023-12-04 22:47:08.739] [INFO ] [main] org.springframework.data.repository.config.RepositoryConfigurationDelegate Finished Spring Data repository scanning in 1 ms. Found 0 Redis repository interfaces.
+[2023-12-04 22:47:09.114] [INFO ] [main] org.springframework.boot.web.embedded.tomcat.TomcatWebServer Tomcat initialized with port 8080 (http)
+[2023-12-04 22:47:09.115] [INFO ] [main] org.apache.catalina.core.AprLifecycleListener An older version [1.2.34] of the Apache Tomcat Native library is installed, while Tomcat recommends a minimum version of [2.0.5]
+[2023-12-04 22:47:09.115] [INFO ] [main] org.apache.catalina.core.AprLifecycleListener Loaded Apache Tomcat Native library [1.2.34] using APR version [1.7.0].
+[2023-12-04 22:47:09.117] [INFO ] [main] org.apache.catalina.core.AprLifecycleListener OpenSSL successfully initialized [OpenSSL 1.1.1o  3 May 2022]
+[2023-12-04 22:47:09.121] [INFO ] [main] org.apache.coyote.http11.Http11NioProtocol Initializing ProtocolHandler ["http-nio-8080"]
+[2023-12-04 22:47:09.122] [INFO ] [main] org.apache.catalina.core.StandardService Starting service [Tomcat]
+[2023-12-04 22:47:09.123] [INFO ] [main] org.apache.catalina.core.StandardEngine Starting Servlet engine: [Apache Tomcat/10.1.16]
+[2023-12-04 22:47:09.166] [INFO ] [main] org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] Initializing Spring embedded WebApplicationContext
+[2023-12-04 22:47:09.167] [INFO ] [main] org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext Root WebApplicationContext: initialization completed in 833 ms
+[2023-12-04 22:47:09.245] [INFO ] [main] com.zaxxer.hikari.HikariDataSource HikariPool-1 - Starting...
+[2023-12-04 22:47:09.343] [INFO ] [main] com.zaxxer.hikari.pool.HikariPool HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3b5a19ed
+[2023-12-04 22:47:09.344] [INFO ] [main] com.zaxxer.hikari.HikariDataSource HikariPool-1 - Start completed.
+[2023-12-04 22:47:09.369] [INFO ] [main] org.hibernate.jpa.internal.util.LogHelper HHH000204: Processing PersistenceUnitInfo [name: default]
+[2023-12-04 22:47:09.405] [INFO ] [main] org.hibernate.Version HHH000412: Hibernate ORM core version 6.3.1.Final
+[2023-12-04 22:47:09.430] [INFO ] [main] org.hibernate.cache.internal.RegionFactoryInitiator HHH000026: Second-level cache disabled
+[2023-12-04 22:47:09.594] [INFO ] [main] org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo No LoadTimeWeaver setup: ignoring JPA class transformer
+[2023-12-04 22:47:09.842] [INFO ] [main] org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+[2023-12-04 22:47:09.845] [INFO ] [main] org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2023-12-04 22:47:10.034] [WARN ] [main] org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+[2023-12-04 22:47:10.262] [INFO ] [main] org.apache.coyote.http11.Http11NioProtocol Starting ProtocolHandler ["http-nio-8080"]
+[2023-12-04 22:47:10.277] [INFO ] [main] org.springframework.boot.web.embedded.tomcat.TomcatWebServer Tomcat started on port 8080 (http) with context path ''
+[2023-12-04 22:47:10.282] [INFO ] [main] com.example.makedelivery.MakeDeliveryApplication Started MakeDeliveryApplication in 2.281 seconds (process running for 2.837)

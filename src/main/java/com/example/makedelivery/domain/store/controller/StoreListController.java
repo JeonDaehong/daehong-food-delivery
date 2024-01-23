@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,13 +32,13 @@ public class StoreListController {
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<List<StoreResponse>> getStoreListByCategory(@CurrentMember Member member,
+    public ResponseEntity<List<StoreResponse>> getStoreListByCategory(@RequestBody(required = false) Member member,
                                                                       @PathVariable Long categoryId) {
         List<StoreResponse> storeList = storeListService.getStoreListByCategory(member, categoryId);
         return ResponseEntity.status(HttpStatus.OK).body(storeList);
     }
 
-    @GetMapping("/{searchStoreName}")
+    @GetMapping("/searchStoreName/{searchStoreName}")
     public ResponseEntity<List<StoreResponse>> getStoreListByCategory(@PathVariable String searchStoreName) {
         List<StoreResponse> storeList = storeListService.getStoreListBySearchName(searchStoreName);
         return ResponseEntity.status(HttpStatus.OK).body(storeList);

@@ -18,7 +18,6 @@ public class StoreInsertRequest {
     @Size(min = 2, max = 30, message = "매장명은 최소 2자 이상, 최대 30자 이하여야 합니다.")
     private String name;
 
-
     @NotEmpty(message = "휴대폰 번호는 공란일 수 없습니다.")
     @Pattern( message = "올바른 휴대폰 번호 형식이 아닙니다. (예: 010-1234-5678)",
                regexp = "^010-\\d{4}-\\d{4}$")

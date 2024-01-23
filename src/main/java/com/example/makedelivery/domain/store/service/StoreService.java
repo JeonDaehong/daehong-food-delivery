@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.makedelivery.common.constants.CacheValueConstants.STORE_LIST;
 import static com.example.makedelivery.common.exception.ExceptionEnum.*;
 
 @Service
@@ -42,6 +43,12 @@ public class StoreService {
     @Transactional(readOnly = true)
     public Store findThisStore(Long storeId) {
         return storeRepository.findStoreById(storeId)
+                .orElseThrow(() -> new ApiException(STORE_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public Store findThisStoreName(String storeName) {
+        return storeRepository.findStoreByName(storeName)
                 .orElseThrow(() -> new ApiException(STORE_NOT_FOUND));
     }
 
@@ -120,7 +127,7 @@ public class StoreService {
      * 고객들의 StoreList 관련 된 캐싱 정보를 모두 초기화 합니다.
      */
     @Transactional
-    @CacheEvict(value = "storeList", allEntries = true)
+    @CacheEvict(value = STORE_LIST, allEntries = true, cacheManager = "redisCacheManager")
     public void deleteStore(Long storeId, Member member) {
         Store myStore = findMyStore(storeId, member);
         myStore.deleteStoreStatus();
