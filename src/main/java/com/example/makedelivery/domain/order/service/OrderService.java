@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 
+import static com.example.makedelivery.common.constants.CacheValueConstants.*;
 import static com.example.makedelivery.common.exception.ExceptionEnum.*;
 
 /**
@@ -56,9 +57,10 @@ public class OrderService {
     private final OrderMenuOptionRepository orderMenuOptionRepository;
 
     @Transactional
-    @Caching(put = {
-            @CachePut(value = "orderListByMember", key = "#member.getId()"),
-            @CachePut(value = "orderListByStore", key = "#storeId")
+    @Caching(evict = {
+            @CacheEvict(value = ORDER_LIST_BY_MEMBER, key = "'member:' + #member.id", cacheManager = "redisCacheManager"),
+            @CacheEvict(value = CART_LIST, key = "'member:' + #member.id", cacheManager = "redisCacheManager"),
+            @CacheEvict(value = ORDER_LIST_BY_STORE, key = "'store:' + #storeId", cacheManager = "redisCacheManager")
     })
     public void registerOrder(Member member, List<OrderMenuRequest> requestList, Payment.PaymentType payType,
                               Long addressId, Long storeId, Integer usePoint) {
@@ -75,7 +77,7 @@ public class OrderService {
         int totalPrice = calculateTotalPrice(requestList);
 
         // 구매 가격보다, 사용 포인트가 많을 수 없습니다.
-        validateUsePoint(totalPrice, usePoint);
+        validateUsePoint(member, totalPrice, usePoint);
 
         // 실제 결제 금액
         int actualPrice = calculateActualPrice(totalPrice, usePoint);
@@ -88,12 +90,16 @@ public class OrderService {
 
         // 문제 없으면 결제
         orderTransactionService.payment(payType, orderId, member.getId(), actualPrice);
+        
+        // 결제가 완료되면, 장바구니를 비웁니다.
+        // 장바구니에 든 걸 전체적으로 구매하도록 설계하였기 때문에, 장바구니 전체를 비워줍니다.
+        cartService.deleteCartAll(member);
     }
 
     @Transactional
-    @Caching(put = {
-            @CachePut(value = "orderListByMember", key = "#member.getId()"),
-            @CachePut(value = "orderListByStore", key = "#storeId")
+    @Caching(evict = {
+            @CacheEvict(value = ORDER_LIST_BY_MEMBER, key = "'member:' + #member.id", cacheManager = "redisCacheManager"),
+            @CacheEvict(value = ORDER_LIST_BY_STORE, key = "'store:' + #storeId", cacheManager = "redisCacheManager")
     })
     public void cancelOrderByMember(Member member, Long orderId, Long storeId) {
         Order order = orderRepository.findOrderByIdAndMemberId(orderId, member.getId())
@@ -103,15 +109,16 @@ public class OrderService {
         Order.OrderStatus orderStatus = order.getOrderStatus();
         if ( orderStatus.equals(Order.OrderStatus.COMPLETE_ORDER) || orderStatus.equals(Order.OrderStatus.APPROVED_ORDER) ) {
             order.cancelOrder();
+            orderTransactionService.cancelPayment(orderId, member.getId()); // 결제 상태도 취소가 됩니다.
         } else {
             throw new ApiException(ORDER_CANCEL_ERROR);
         }
     }
 
     @Transactional
-    @Caching(put = {
-            @CachePut(value = "orderListByMember", key = "#member.getId()"),
-            @CachePut(value = "orderListByStore", key = "#storeId")
+    @Caching(evict = {
+            @CacheEvict(value = ORDER_LIST_BY_MEMBER, key = "'member:' + #member.id", cacheManager = "redisCacheManager"),
+            @CacheEvict(value = ORDER_LIST_BY_STORE, key = "'store:' + #storeId", cacheManager = "redisCacheManager")
     })
     public void cancelOrderByStore(Member member, Long orderId, Long storeId) {
         storeService.validationCheckedMyStore(storeId, member); // 매장 점주 맞는지 체크
@@ -122,12 +129,13 @@ public class OrderService {
         Order.OrderStatus orderStatus = order.getOrderStatus();
         if ( orderStatus.equals(Order.OrderStatus.COMPLETE_ORDER) || orderStatus.equals(Order.OrderStatus.APPROVED_ORDER) || orderStatus.equals(Order.OrderStatus.DELIVERY_WAIT) ) {
             order.cancelOrder();
+            orderTransactionService.cancelPayment(orderId, member.getId()); // 결제 상태도 취소가 됩니다.
         } else {
             throw new ApiException(ORDER_CANCEL_ERROR);
         }
     }
 
-    @Cacheable(key = "#member.getId()", value = "orderListByMember")
+    @Cacheable(key = "'member:' + #member.id", value = ORDER_LIST_BY_MEMBER, cacheManager = "redisCacheManager")
     @Transactional(readOnly = true)
     public List<OrderResponse> getMyOrderList(Member member) {
         return orderRepository.findAllByMemberIdOrderByUpdateDateTimeDesc(member.getId())
@@ -159,7 +167,7 @@ public class OrderService {
                 .toList();
     }
 
-    @Cacheable(key = "#storeId", value = "orderListByStore")
+    @Cacheable(value = ORDER_LIST_BY_STORE, key = "'store:' + #storeId", cacheManager = "redisCacheManager")
     @Transactional(readOnly = true)
     public List<OrderResponse> getMyStoreOrderList(Member member, Long storeId) {
         storeService.validationCheckedMyStore(storeId, member); // 매장 점주 맞는지 체크
@@ -193,9 +201,9 @@ public class OrderService {
     }
 
     @Transactional
-    @Caching(put = {
-            @CachePut(value = "orderListByMember", key = "#member.getId()"),
-            @CachePut(value = "orderListByStore", key = "#storeId")
+    @Caching(evict = {
+            @CacheEvict(value = ORDER_LIST_BY_MEMBER, key = "'member:' + #member.id", cacheManager = "redisCacheManager"),
+            @CacheEvict(value = ORDER_LIST_BY_STORE, key = "'store:' + #storeId", cacheManager = "redisCacheManager")
     })
     public void changeOrderStatusApprove(Member member, Long orderId, Long storeId) {
         storeService.validationCheckedMyStore(storeId, member); // 매장 점주 맞는지 체크
@@ -206,9 +214,9 @@ public class OrderService {
     }
 
     @Transactional
-    @Caching(put = {
-            @CachePut(value = "orderListByMember", key = "#member.getId()"),
-            @CachePut(value = "orderListByStore", key = "#storeId")
+    @Caching(evict = {
+            @CacheEvict(value = ORDER_LIST_BY_MEMBER, key = "'member:' + #member.id", cacheManager = "redisCacheManager"),
+            @CacheEvict(value = ORDER_LIST_BY_STORE, key = "'store:' + #storeId", cacheManager = "redisCacheManager")
     })
     public void changeOrderStatusDeliveryWait(Member member, Long orderId, Long storeId) {
         storeService.validationCheckedMyStore(storeId, member); // 매장 점주 맞는지 체크
@@ -264,7 +272,8 @@ public class OrderService {
         }
     }
 
-    private void validateUsePoint(int totalPrice, int usePoint) {
+    private void validateUsePoint(Member member, int totalPrice, int usePoint) {
+        if ( member.getAvailablePoint() < usePoint ) throw new ApiException(LACK_PONT); // 실제 포인트 부족
         if ( totalPrice < usePoint ) throw new ApiException(OVER_POINT);
     }
 
