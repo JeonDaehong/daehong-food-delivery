@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.makedelivery.common.constants.CacheValueConstants.STORE_LIST;
 import static com.example.makedelivery.common.exception.ExceptionEnum.*;
 
 @Service
@@ -37,28 +38,32 @@ public class StoreListService {
 
     /**
      * 회원이면서, 메인 주소가 등록 되어있는 경우에는 주변 10KM 매장을 검색하여 가까운 순서로 반환 해줍니다.
-     * 비회원이거나, 메인 주소를 등록하지 않았을 경우 이름 순서로 반환 해줍니다.
+     * 비회원이면서 메인 주소를 등록하지 않았을 경우 이름 순서로 반환 해줍니다.
      * <br><br>
-     * 또한, 해당 정보를 캐싱하여 담습니다.
+     * 또한, 회원일 경우에는 해당 정보를 캐싱하여 담습니다. ( condition 을 활용하여 조건 지정이 가능합니다. )
      * 캐시에 있는지 확인한 후, 있으면 캐시 메모리에서 가져오고, 없으면(Cache Miss) DB 에서 가져온 후 캐시에 저장합니다.
      * 이러한 방법을 캐시 전략에서 Look Aside 패턴이라고 합니다.
      */
-    @Cacheable(key = "#categoryId", value = "storeList")
+    @Cacheable(key = "'member:' + #member?.id + '-category:' + #categoryId", value = STORE_LIST, cacheManager = "redisCacheManager", condition = "#member != null")
     @Transactional(readOnly = true)
     public List<StoreResponse> getStoreListByCategory(Member member, Long categoryId) {
 
-        Optional<MemberAddress> memberAddressOptional = memberAddressRepository
-                .findTopByStatusAndMemberIdOrderByPriorityAsc(MemberAddress.Status.DEFAULT, member.getId());
+        List<Store> stores;
 
-        List<Store> stores = memberAddressOptional
-                .map(memberAddress ->
-                        storeRepository.findAllWithInDistanceInCategoryIdOrderByDistance(memberAddress.getLatitude(), memberAddress.getLongitude(), categoryId)
-                                .orElse(List.of())
-                )
-                .orElseGet(() ->
-                        storeRepository.findTop30ByCategoryIdOrderByName(categoryId)
-                                .orElse(List.of())
-                );
+        if (member == null) {
+            stores = storeRepository.findTop30ByCategoryIdOrderByName(categoryId).orElse(List.of());
+        } else {
+            stores = memberAddressRepository
+                    .findTopByStatusAndMemberIdOrderByPriorityAsc(MemberAddress.Status.DEFAULT, member.getId())
+                    .map(memberAddress ->
+                            storeRepository.findAllWithInDistanceInCategoryIdOrderByDistance(
+                                            memberAddress.getLatitude(), memberAddress.getLongitude(), categoryId)
+                                    .orElse(List.of())
+                    )
+                    .orElseGet(() ->
+                            storeRepository.findTop30ByCategoryIdOrderByName(categoryId).orElse(List.of())
+                    );
+        }
 
         return stores.stream()
                 .map(store -> {
