@@ -2,7 +2,22 @@
 
 ![logo](https://github.com/JeonDaehong/daehong-food-delivery/assets/90895144/dfcdfbd0-52c6-48f5-aa21-5a491284ec4f)
 
-## 1. 개발 주요 로직 & 주요 이슈 해결 목록
+## 1. 프로젝트 목표
+
+- 배달의 민족과 같은 배달 앱 서비스를 구현해 내는 것을 목표로 합니다.
+  
+- 단순 기능 구현이 아닌, 동시성 이슈, 분산 서버 환경, 그리고 대용량 트래픽 처리 등을 고려하여 개발합니다.
+  
+- 객체지향의 원칙을 준수하고, 이론적 근거와 본인만의 철학을 토대로 코드를 작성합니다.
+  
+- 어떤 기술을 사용하든, 단순히 구현만 할 줄 아는 것이 아니라, 원리를 이해하고 개발합니다.
+  
+- 새롭게 접한 기술이나, 중요한 기술은 반드시 문서화(블로그) 하여 정리합니다.
+  
+- 네이버 클라우드를 활용하여, 실제로 서버에 적용시켜 보는 것을 목표로 합니다.
+
+
+## 2. 개발 주요 로직 & 주요 이슈 해결 목록
 
 **`클릭 시, 개발 내용을 정리한 개인 블로그 내용으로 이동합니다.`**
 
@@ -21,3 +36,10 @@
 #### 7. [주문, 결제 로직 개발시 Self-Invocation 을 고려하여 기능 개발](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-Self-Invocation-%EC%97%90-%EB%8C%80%ED%95%9C-%EA%B0%84%EB%8B%A8%ED%95%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0)
 
 #### 8. [여러 대의 분산 서버에서 Session 로그인을 유지하는 방법](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-Redis-Session%EC%9C%BC%EB%A1%9C-%EB%B6%84%EC%82%B0-%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C-%EC%84%B8%EC%85%98-%EA%B4%80%EB%A6%AC%ED%95%98%EA%B8%B0)
+
+
+## 3. 프로젝트 중점사항
+
+## 4. DB ERD
+
+## 5. Use Case
