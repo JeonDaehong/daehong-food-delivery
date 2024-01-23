@@ -10,6 +10,7 @@ import com.example.makedelivery.domain.member.model.MemberProfileRequest;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.member.model.entity.MemberAddress;
 import com.example.makedelivery.domain.member.repository.MemberAddressRepository;
+import com.example.makedelivery.domain.member.repository.MemberRedisCacheRepository;
 import com.example.makedelivery.domain.member.service.MemberAddressService;
 import com.example.makedelivery.domain.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
@@ -40,13 +41,16 @@ public class MemberApplicationDBTest {
     private MemberService memberService;
 
     @Autowired
-    MemberAddressService memberAddressService;
+    private MemberAddressService memberAddressService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
     private RedissonLockFacade redissonLockFacade;
+
+    @Autowired
+    private MemberRedisCacheRepository memberRedisCacheRepository;
 
     @Test
     @DisplayName("회원가입이 정상적으로 진행됩니다.")
@@ -186,6 +190,17 @@ public class MemberApplicationDBTest {
             memberService.convertPointsToAvailablePoints(dbMember, 10_000);
         });
         assertEquals(POINTS_INSUFFICIENT.getCode(), apiException.getError().getCode());
+    }
+
+    @Test
+    @DisplayName("해당 회원에 대한 Redis 캐시 내용이 전부 삭제됩니다.")
+    void evictRedisCacheByMemberTest() {
+        // given
+        Member dbMember = memberService.findMemberByEmail("aTestAdmin710a@admin.co.kr");
+        // when
+        memberRedisCacheRepository.evictCachesByMember(dbMember.getId());
+        // then
+
     }
 
 }

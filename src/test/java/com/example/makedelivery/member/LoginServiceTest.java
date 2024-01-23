@@ -57,7 +57,7 @@ public class LoginServiceTest {
         // login then
         System.out.println("현재 로그인 한 유저 : " + loginService.getCurrentMember().toString());
         // logout when
-        loginService.logoutMember();
+        loginService.logoutMember(member);
         // logout then
         ApiException apiException = assertThrows(ApiException.class, () -> {
             loginService.getCurrentMember();
