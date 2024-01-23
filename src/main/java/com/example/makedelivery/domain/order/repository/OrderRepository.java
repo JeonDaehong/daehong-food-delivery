@@ -26,7 +26,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     // 낙관적 락
     @Lock(LockModeType.OPTIMISTIC)
-    @Query("select s from Order s where s.id = :id")
-    Order findByIdWithOptimisticLock(Long id);
+    @Query("select o from Order o where o.id = :id")
+    Optional<Order> findOrderByIdOptimisticLock(Long id);
 
 }

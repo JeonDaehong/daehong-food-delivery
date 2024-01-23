@@ -1,8 +1,10 @@
 package com.example.makedelivery.common.facade;
 
+import com.example.makedelivery.domain.coupon.service.CouponService;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.rider.service.RiderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,16 +19,28 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class OptimisticLockStockFacade {
+public class OptimisticLockFacade {
 
     private final RiderService riderService;
+    private final CouponService couponService;
 
     public void registerRider(Member member, Long orderId) throws InterruptedException {
         while (true) {
             try {
                 riderService.registerRider(member, orderId);
                 break;
-            } catch (Exception e) {
+            } catch (ObjectOptimisticLockingFailureException e) {
+                Thread.sleep(50);
+            }
+        }
+    }
+
+    public void useCoupon(Member member, Long couponId) throws InterruptedException {
+        while (true) {
+            try {
+                couponService.useCoupon(member, couponId);
+                break;
+            } catch (ObjectOptimisticLockingFailureException e) {
                 Thread.sleep(50);
             }
         }

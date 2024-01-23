@@ -1,21 +1,25 @@
 package com.example.makedelivery.common.config;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheManager.RedisCacheManagerBuilder;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.data.redis.serializer.*;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.Duration;
 
@@ -42,24 +46,32 @@ import java.time.Duration;
  * 데이터를 꺼내올 때 그 클래스타입으로만 가져올 수 있습니다.
  */
 @Configuration
+@Slf4j
 @EnableRedisHttpSession
 public class RedisConfig {
 
     @Value("${spring.data.redis.host}")
-    private String host;
+    private String sessionHost;
 
     @Value("${spring.data.redis.port}")
-    private int port;
+    private int sessionPort;
 
-    @Value("${spring.data.redis.password}")
-    private String password;
+    @Value("${spring.second-redis.data.redis.host}")
+    private String cacheHost;
 
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration();
-        redisConfiguration.setHostName(host);
-        redisConfiguration.setPort(port);
-        redisConfiguration.setPassword(password);
+    @Value("${spring.second-redis.data.redis.port}")
+    private int cachePort;
+
+    @Bean({"redisConnectionFactory", "redisSessionConnectionFactory"})
+    @Primary
+    public RedisConnectionFactory redisSessionConnectionFactory() {
+        RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration(sessionHost, sessionPort);
+        return new LettuceConnectionFactory(redisConfiguration);
+    }
+
+    @Bean("redisCacheConnectionFactory")
+    public RedisConnectionFactory redisCacheConnectionFactory() {
+        RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration(cacheHost, cachePort);
         return new LettuceConnectionFactory(redisConfiguration);
     }
 
@@ -67,14 +79,23 @@ public class RedisConfig {
      * 일반적인 레디스 저장소로 사용할 템플릿 메서드
      */
     @Bean
+    @Qualifier("redisCacheConnectionFactory")
     public RedisTemplate<?, ?> redisTemplate() {
         RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        redisTemplate.setConnectionFactory(redisCacheConnectionFactory());
         return redisTemplate;
+    }
+
+    /**
+     * HashOperations Bean 설정
+     */
+    @Bean
+    public HashOperations<?, ?, ?> hashOperations(RedisTemplate<?, ?> redisTemplate) {
+        return redisTemplate.opsForHash();
     }
 
     /**
@@ -86,10 +107,10 @@ public class RedisConfig {
     }
 
     /**
-     * Redis를 캐시로 사용하기 위한 CacheManager 빈 생성
-     * gradle에서 starter-cache 의존성과 @EnableCaching을 통해 RedisCacheManager가 기본 설정으로 만들어지지만,
-     * 상세한 동작을 위해 구현하여 사용합니다. RedisCacheConfiguration으로 레디스 캐시 설정을 커스터마이징합니다.
-     *
+     * Redis 를 캐시로 사용하기 위한 CacheManager 빈 생성
+     * gradle 에서 starter-cache 의존성과 @EnableCaching 을 통해 RedisCacheManager 가 기본 설정으로 만들어지지만,
+     * 상세한 동작을 위해 구현하여 사용합니다. RedisCacheConfiguration 으로 레디스 캐시 설정을 커스터마이징합니다.
+     * <br</br>
      * 캐시 추상화는 자바 메서드에 적용되어, 캐시에서 사용가능한 정보가 있다면 실행 횟수를 줄입니다.
      * 대상 메서드가 호출될 때마다, 추상화는 메서드가 이미 해당 매개변수로 이미 호출되었는지 확인합니다.
      * 만약에 호출되었다며느 캐시 결과는 실제 메서드 실행 없이 반환합니다.
@@ -103,17 +124,19 @@ public class RedisConfig {
                 .disableCachingNullValues()
                 .serializeKeysWith(
                         RedisSerializationContext.SerializationPair
-                                .fromSerializer(new StringRedisSerializer()))
+                                .fromSerializer(new StringRedisSerializer())
+                )
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair
-                                .fromSerializer(new GenericJackson2JsonRedisSerializer())
+                                .fromSerializer(new Jackson2JsonRedisSerializer<>(Object.class))
                 )
-                .entryTtl(Duration.ofHours(1L)); // 캐시 유지시간 1시간
+                .entryTtl(Duration.ofMinutes(10L)); // 캐시 유지시간 10분
 
-        return RedisCacheManager.RedisCacheManagerBuilder
-                .fromConnectionFactory(redisConnectionFactory())
+        return RedisCacheManagerBuilder
+                .fromConnectionFactory(redisCacheConnectionFactory())
                 .cacheDefaults(redisCacheConfiguration)
                 .build();
     }
+
 
 }
