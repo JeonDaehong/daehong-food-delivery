@@ -3,9 +3,11 @@ package com.example.makedelivery.domain.menu.domain;
 import com.example.makedelivery.domain.menu.domain.entity.Option;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Builder
 @Getter
+@ToString
 public class OptionResponse {
 
     private Long id;

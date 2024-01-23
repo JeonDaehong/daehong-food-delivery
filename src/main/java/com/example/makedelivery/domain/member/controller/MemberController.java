@@ -1,9 +1,11 @@
 package com.example.makedelivery.domain.member.controller;
 
+import com.example.makedelivery.common.annotation.CurrentMember;
 import com.example.makedelivery.common.annotation.LoginCheck;
 import com.example.makedelivery.common.annotation.LoginCheck.MemberLevel;
 import com.example.makedelivery.domain.member.model.MemberJoinRequest;
 import com.example.makedelivery.domain.member.model.LoginRequest;
+import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.member.service.LoginService;
 import com.example.makedelivery.domain.member.service.MemberService;
 import jakarta.validation.Valid;
@@ -54,8 +56,8 @@ public class MemberController {
 
     @GetMapping("/logout")
     @LoginCheck(memberLevel = MemberLevel.MEMBER)
-    public ResponseEntity<HttpStatus> logout() {
-        loginService.logoutMember();
+    public ResponseEntity<HttpStatus> logout(@CurrentMember Member member) {
+        loginService.logoutMember(member);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

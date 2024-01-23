@@ -6,6 +6,7 @@ import lombok.*;
 
 @Builder
 @Getter
+@ToString
 public class MenuResponse {
 
     private Long id;

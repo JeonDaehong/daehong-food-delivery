@@ -58,7 +58,7 @@ public class MemberInfoController {
     public ResponseEntity<HttpStatus> deleteMember(@CurrentMember Member member, @RequestParam String inputPassword) {
         memberService.isValidPassword(member, inputPassword);
         memberService.deleteMember(member);
-        loginService.logoutMember();
+        loginService.logoutMember(member);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

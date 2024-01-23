@@ -35,14 +35,14 @@ public class MemberJoinRequest {
     private String nickname;
 
     @NotNull
-    private MemberLevel memberLevel;
+    private String memberLevel; // 받을 땐 String 으로 받아서, 넘길 때 Enum 으로 변환
 
     public static Member toEntity(MemberJoinRequest request, PasswordEncoder passwordEncoder) {
         return Member.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
-                .memberLevel(request.memberLevel)
+                .memberLevel(MemberLevel.valueOf(request.memberLevel))
                 .status(Status.DEFAULT)
                 .point(0)
                 .availablePoint(0)

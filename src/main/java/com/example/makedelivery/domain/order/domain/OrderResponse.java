@@ -6,11 +6,14 @@ import com.example.makedelivery.domain.menu.domain.entity.MenuGroup;
 import com.example.makedelivery.domain.order.domain.entity.Order;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Builder
+@ToString
 public class OrderResponse {
 
     private Long id;
@@ -24,7 +27,9 @@ public class OrderResponse {
     private Integer originalPrice;
     private Integer discount;
     private Integer actualPrice;
-    private List<OrderMenuResponse> orderMenuList; // 주문한 메뉴 리스트
+
+    @Builder.Default
+    private List<OrderMenuResponse> orderMenuList = new ArrayList<>(); // 주문한 메뉴 리스트
 
     public static OrderResponse toOrderResponse(Order order, String deliveryAddress,
                                                 Double deliveryLongitude, Double deliveryLatitude,
