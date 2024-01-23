@@ -9,17 +9,21 @@ import jakarta.persistence.Enumerated;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
 @Getter
+@ToString
 public class MenuGroupResponse {
 
     private Long id;
     private String name;
     private Long storeId;
     private Status status;
-    private List<MenuResponse> menuList; // 해당 그룹 속, 메뉴 리스트
+
+    @Builder.Default
+    private List<MenuResponse> menuList = new ArrayList<>(); // 해당 그룹 속, 메뉴 리스트
 
     public static MenuGroupResponse toMenuGroupResponse(MenuGroup menuGroup, List<MenuResponse> menuList) {
         return MenuGroupResponse.builder()

@@ -4,12 +4,14 @@ import com.example.makedelivery.domain.member.model.entity.Cart;
 import com.example.makedelivery.domain.member.model.entity.CartOption;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Builder
 @Getter
+@ToString
 public class CartResponse {
 
     private Long id;
@@ -18,7 +20,9 @@ public class CartResponse {
     private String menuName;
     private Long storeId;
     private Integer count;
-    private List<CartOptionResponse> optionList;
+
+    @Builder.Default
+    private List<CartOptionResponse> optionList = new ArrayList<>();
 
     public static CartResponse toCartResponse(Cart cart) {
         return CartResponse.builder()
