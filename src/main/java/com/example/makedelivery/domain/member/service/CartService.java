@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.makedelivery.common.constants.CacheValueConstants.CART_LIST;
 import static com.example.makedelivery.common.exception.ExceptionEnum.CART_STORE_NOT_MATCHED;
 
 @Service
@@ -59,10 +60,10 @@ public class CartService {
      * 같은 메뉴+옵션이 모두 일치하는 장바구니가 없을 경우, 새롭게 추가해줍니다.
      */
     private void addNewCart(Member member, CartRequest request) {
-        Cart newCart = cartRepository.save(CartRequest.toEntity(request, member.getId()));
-
+        Cart cart = CartRequest.toEntity(request, member.getId());
+        Long newCartId = cartRepository.save(cart).getId();
         request.getOptionList().forEach(optionRequest -> {
-            CartOption cartOption = CartOptionRequest.toEntity(optionRequest, newCart.getId(), member.getId());
+            CartOption cartOption = CartOptionRequest.toEntity(optionRequest, newCartId, member.getId());
             cartOptionRepository.save(cartOption);
         });
     }
@@ -86,16 +87,17 @@ public class CartService {
      * 고객 입장에서도 좋고, 프로그램 설계면에서도 좋다고 판단하였습니다.
      */
     @Transactional
+    @CacheEvict(value = CART_LIST, key = "'member:' + #member.id", cacheManager = "redisCacheManager")
     public void addCart(Member member, CartRequest request) {
         validateCartStoreMatching(member.getId(), request.getStoreId()); // 장바구니에는 같은 매장의 메뉴만 담을 수 있습니다.
-        if ( isMenuAlreadyInCart(member, request) ) {
+        if ( ! isMenuAlreadyInCart(member, request) ) {
             addNewCart(member, request);
         } else {
             increaseCartItemCount(member, request);
         }
     }
 
-    @Cacheable(key = "#member.getId()", value = "cartList")
+    @Cacheable(key = "'member:' + #member.id", value = CART_LIST, cacheManager = "redisCacheManager")
     @Transactional(readOnly = true)
     public List<CartResponse> loadCart(Member member) {
         return cartRepository.findAllByMemberId(member.getId())
@@ -120,14 +122,14 @@ public class CartService {
      * <br><br>
      * 또한 이렇게 장바구니에 변화가 생기면, 캐시에서 삭제 처리를 해줍니다.
      */
-    @CacheEvict(value = "cartList", key = "#member.getId()")
+    @CacheEvict(value = CART_LIST, key = "'member:' + #member.id", cacheManager = "redisCacheManager")
     @Transactional
     public void deleteCart(Member member, Long cartId) {
         cartOptionRepository.deleteAllByCartIdAndMemberId(cartId, member.getId());
         cartRepository.deleteByIdAndMemberId(cartId, member.getId());
     }
 
-    @CacheEvict(value = "cartList", key = "#member.getId()")
+    @CacheEvict(value = CART_LIST, key = "'member:' + #member.id", cacheManager = "redisCacheManager")
     @Transactional
     public void deleteCartAll(Member member) {
         cartOptionRepository.deleteAllByMemberId(member.getId());
