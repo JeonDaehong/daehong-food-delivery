@@ -8,13 +8,13 @@ import lombok.*;
 @Entity
 @Getter
 @ToString
-@Table(name = "TB_DLIEV_HISTORY")
+@Table(name = "TB_DELIV_HISTORY")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RiderDeliveryHistory extends DateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "DLIEV_ID")
+    @Column(name = "DELIV_ID")
     private Long id;
 
     @Column(name = "RIDER_ID")

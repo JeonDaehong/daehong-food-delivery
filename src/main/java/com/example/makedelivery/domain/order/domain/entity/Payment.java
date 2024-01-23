@@ -64,4 +64,8 @@ public class Payment extends DateEntity {
         this.paymentStatus = paymentStatus;
     }
 
+    public void cancelPayment() {
+        this.paymentStatus = PaymentStatus.CANCEL_PAYMENT;
+    }
+
 }

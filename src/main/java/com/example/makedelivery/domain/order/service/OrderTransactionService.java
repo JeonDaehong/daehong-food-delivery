@@ -1,5 +1,6 @@
 package com.example.makedelivery.domain.order.service;
 
+import com.example.makedelivery.common.exception.ApiException;
 import com.example.makedelivery.common.utils.PaymentServiceFactory;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.order.domain.OrderMenuOptionRequest;
@@ -12,6 +13,7 @@ import com.example.makedelivery.domain.order.domain.entity.Payment.PaymentType;
 import com.example.makedelivery.domain.order.repository.OrderMenuOptionRepository;
 import com.example.makedelivery.domain.order.repository.OrderMenuRepository;
 import com.example.makedelivery.domain.order.repository.OrderRepository;
+import com.example.makedelivery.domain.order.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.example.makedelivery.common.exception.ExceptionEnum.PAYMENT_INFO_NOT_FOUND;
 import static com.example.makedelivery.domain.order.domain.entity.Order.OrderStatus.COMPLETE_ORDER;
 
 /**
@@ -46,6 +49,7 @@ public class OrderTransactionService {
     private final OrderRepository orderRepository;
     private final OrderMenuRepository orderMenuRepository;
     private final OrderMenuOptionRepository orderMenuOptionRepository;
+    private final PaymentRepository paymentRepository;
 
     @Transactional
     public Long registerOrder(Member member, List<OrderMenuRequest> requestList, Long addressId,
@@ -82,6 +86,13 @@ public class OrderTransactionService {
         PaymentService paymentService = paymentServiceFactory.getPaymentService(payType);
         paymentService.payment(orderId, memberId, actualPrice);
 
+    }
+
+    @Transactional
+    public void cancelPayment(Long orderId, Long memberId) {
+        Payment payment = paymentRepository.findPaymentByOrderIdAndMemberId(orderId, memberId)
+                .orElseThrow( () -> new ApiException(PAYMENT_INFO_NOT_FOUND) );
+        payment.cancelPayment();
     }
 
     private void saveOrderMenuOptions(List<OrderMenuOptionRequest> optionList, Long orderMenuId) {

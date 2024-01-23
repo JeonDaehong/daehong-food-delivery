@@ -2,14 +2,12 @@ package com.example.makedelivery.domain.rider.controller;
 
 import com.example.makedelivery.common.annotation.CurrentMember;
 import com.example.makedelivery.common.annotation.LoginCheck;
-import com.example.makedelivery.common.facade.OptimisticLockStockFacade;
+import com.example.makedelivery.common.facade.OptimisticLockFacade;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.rider.domain.DeliveryHistoryResponse;
 import com.example.makedelivery.domain.rider.domain.RiderPossibleOrderResponse;
-import com.example.makedelivery.domain.rider.domain.entity.RiderDeliveryHistory;
 import com.example.makedelivery.domain.rider.domain.entity.RiderDeliveryHistory.DeliveryStatus;
 import com.example.makedelivery.domain.rider.service.RiderService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,7 +24,7 @@ import static com.example.makedelivery.common.constants.URIConstants.RIDER_API_U
 @RequestMapping(RIDER_API_URI)
 public class RiderController {
 
-    private final OptimisticLockStockFacade optimisticLockStockFacade; // 배차 : 낙관적 락
+    private final OptimisticLockFacade optimisticLockFacade; // 배차 : 낙관적 락
     private final RiderService riderService;
 
     @GetMapping
@@ -41,7 +39,7 @@ public class RiderController {
     @LoginCheck(memberLevel = LoginCheck.MemberLevel.RIDER)
     public ResponseEntity<HttpStatus> registerRider(@CurrentMember Member member,
                                                     @RequestParam Long orderId) throws InterruptedException {
-        optimisticLockStockFacade.registerRider(member, orderId);
+        optimisticLockFacade.registerRider(member, orderId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
