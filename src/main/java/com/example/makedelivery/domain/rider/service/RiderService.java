@@ -57,7 +57,7 @@ public class RiderService {
     @Transactional
     public void registerRider(Member member, Long orderId) {
 
-        Order order = orderRepository.findOrderById(orderId).orElseThrow( () -> new ApiException(ORDER_NOT_FOUND) );
+        Order order = orderRepository.findOrderByIdOptimisticLock(orderId).orElseThrow( () -> new ApiException(ORDER_NOT_FOUND) );
 
         if ( order.getRiderId() != null ) throw new ApiException(ALREADY_DISPATCHED); // 이미 배차 완료 시 Exception
 
