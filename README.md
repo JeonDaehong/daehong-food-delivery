@@ -16,3 +16,5 @@
 
 #### 5. [낙관적 Lock 을 사용할 때 테스트 코드나, Facade 에 @Transactional 을 사용하면 안되는 이유](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-%EB%82%99%EA%B4%80%EC%A0%81-Lock-%EC%97%90%EC%84%9C-Transacional-%EC%9D%84-%EC%82%AC%EC%9A%A9%ED%95%98%EB%A9%B4-%EC%95%88%EB%90%98%EB%8A%94-%EC%9D%B4%EC%9C%A0-Lock-%EC%9D%84-%ED%86%B5%ED%95%9C-%EB%9D%BC%EC%9D%B4%EB%8D%94-%EB%B0%B0%EC%B0%A8-%EC%84%9C%EB%B9%84%EC%8A%A4-%EA%B0%9C%EB%B0%9C)
 
+#### 6. [Redis INCR & 백업 테이블을 활용하여 선착순 쿠폰 발급 기능 개발](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-Redis-INCR-%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%98%EC%97%AC-%EC%84%A0%EC%B0%A9%EC%88%9C-%EC%BF%A0%ED%8F%B0-%EB%B0%9C%EA%B8%89-%EA%B8%B0%EB%8A%A5-%EB%A7%8C%EB%93%A4%EA%B8%B0)
+
