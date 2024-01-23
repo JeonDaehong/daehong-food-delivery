@@ -1,6 +1,7 @@
 package com.example.makedelivery.domain.member.service;
 
 import com.example.makedelivery.domain.member.model.entity.Member;
+import com.example.makedelivery.domain.member.repository.MemberRedisCacheRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,9 @@ public class SessionLoginService implements LoginService {
 
     private final MemberService memberService;
     private final HttpSession session;
+
+    private final MemberRedisCacheRepository memberRedisCacheRepository;
+
     public static final String MEMBER_ID = "MEMBER_ID";
 
     @Override
@@ -22,7 +26,9 @@ public class SessionLoginService implements LoginService {
     }
 
     @Override
-    public void logoutMember() {
+    public void logoutMember(Member member) {
+        // 로그인 중에 쌓인 해당 Member 의 캐시 전부 삭제
+        memberRedisCacheRepository.evictCachesByMember(member.getId());
         session.removeAttribute(MEMBER_ID);
     }
 

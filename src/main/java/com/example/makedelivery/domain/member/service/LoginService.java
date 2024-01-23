@@ -11,7 +11,7 @@ import com.example.makedelivery.domain.member.model.entity.Member;
 public interface LoginService {
     void loginMember(final Long id);
 
-    void logoutMember();
+    void logoutMember(final Member member);
 
     Member getCurrentMember();
 
