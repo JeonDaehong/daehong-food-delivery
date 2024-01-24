@@ -1,4 +1,7 @@
 
+<br>
+<br>
+
 ![logo](https://github.com/JeonDaehong/daehong-food-delivery/assets/90895144/dfcdfbd0-52c6-48f5-aa21-5a491284ec4f)
 
 <br>
@@ -6,7 +9,7 @@
 <div align="center">
   <strong>"배달의 민족은 어떻게 대규모 트래픽과, 대용량 데이터를 다루고 있을까"</strong>
   <br><br>
-  배달의 민족과 같은 배달 서비스 플랫폼을 모티브로 만든 API 서버 토이 프로젝트입니다.
+  <strong>배달의 민족과 같은 배달 서비스 플랫폼을 모티브로 만든 API 서버 토이 프로젝트입니다.</strong>
 </div>
 
 <br>
