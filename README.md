@@ -100,6 +100,7 @@
 <br>
 
 ## 🏍️ DB ERD
+![image](https://github.com/JeonDaehong/daehong-food-delivery/assets/90895144/97f69c4a-bdad-4775-8fed-7c9319ed51f5)
 
 <br>
 
