@@ -2,7 +2,7 @@
 <br>
 <br>
 
-![logo](https://github.com/JeonDaehong/daehong-food-delivery/assets/90895144/dfcdfbd0-52c6-48f5-aa21-5a491284ec4f)
+![image](https://github.com/JeonDaehong/daehong-food-delivery/assets/90895144/6a1acdc0-a183-4d9a-8f4f-6052609b7525)
 
 <br>
 
