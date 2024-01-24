@@ -88,7 +88,7 @@
 <br>
 
 ## 🏍️ 프로젝트 전체 구성도
-![image](https://github.com/JeonDaehong/daehong-food-delivery/assets/90895144/9abb0766-c2db-48f4-bcc3-b1a9be4c8043)
+![image](https://github.com/JeonDaehong/daehong-food-delivery/assets/90895144/6a1acdc0-a183-4d9a-8f4f-6052609b7525)
 
 <br>
 
