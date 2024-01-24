@@ -70,6 +70,7 @@
 - JMeter 를 활용한 성능 테스트
 - 로그인 서비스 추상화
 - AOP 를 활용하여 로그인 체크 기능 구현
+- HandlerMethodArgumentResolver 와 WebConfig 를 활용하여 현재 로그인중인 유저 정보 가져오기 구현
 - 결제 서비스 추상화
 - Redis Session 활용
 - Redis Session 과 Cache 서버 분리
