@@ -60,6 +60,8 @@
 
 #### #12. [Redis Session, Cache 저장소 분리하기](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-Redis-Session-Cache-%EC%A0%80%EC%9E%A5%EC%86%8C-%EB%B6%84%EB%A6%AC%ED%95%98%EA%B8%B0)
 
+#### #13. [서버 구조 설계 과정과 JMeter 를 활용한 성능 테스트](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-%EC%84%9C%EB%B2%84-%EA%B5%AC%EC%A1%B0-%EC%84%A4%EA%B3%84-%EA%B3%BC%EC%A0%95%EA%B3%BC-JMeter-%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EC%84%B1%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8)
+
 
 
 <br>
