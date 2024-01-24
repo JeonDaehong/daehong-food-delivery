@@ -54,6 +54,8 @@
 
 #### 9. [@RestContollerAdvice 와 @ExceptionHandler 를 활용하여 예외처리 기능 개발](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-RestAdviceController-%EB%A1%9C-Exception-%EC%B2%98%EB%A6%AC%ED%95%98%EA%B8%B0)
 
+#### 10. [Redis Session, Cache 저장소 분리하기](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-Redis-Session-Cache-%EC%A0%80%EC%9E%A5%EC%86%8C-%EB%B6%84%EB%A6%AC%ED%95%98%EA%B8%B0)
+
 <br>
 
 ## 🏍️ 프로젝트 중점사항
