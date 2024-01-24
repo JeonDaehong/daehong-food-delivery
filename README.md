@@ -56,6 +56,8 @@
 
 #### 10. [Redis Session, Cache 저장소 분리하기](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-Redis-Session-Cache-%EC%A0%80%EC%9E%A5%EC%86%8C-%EB%B6%84%EB%A6%AC%ED%95%98%EA%B8%B0)
 
+#### 11. [AOP를 활용하여 로그인 확인 기능 구현](https://development-my-link.tistory.com/entry/%EA%B0%9C%EB%B0%9C-%ED%9A%8C%EA%B3%A0%EB%A1%9D-%EA%B3%B5%ED%86%B5-%EC%9D%B8%ED%94%84%EB%9D%BC-%EB%A1%9C%EC%A7%81%EC%9D%B8-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%ED%99%95%EC%9D%B8-%EA%B8%B0%EB%8A%A5%EC%9D%84-AOP%EB%A1%9C-%EB%B6%84%EB%A6%AC%ED%95%98%EA%B8%B0)
+
 <br>
 
 ## 🏍️ 프로젝트 중점사항
