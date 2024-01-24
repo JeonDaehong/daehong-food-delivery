@@ -1,4 +1,3 @@
-# Daehong Food Delivery Service
 
 ![logo](https://github.com/JeonDaehong/daehong-food-delivery/assets/90895144/dfcdfbd0-52c6-48f5-aa21-5a491284ec4f)
 
