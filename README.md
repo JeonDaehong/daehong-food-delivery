@@ -105,7 +105,7 @@
 <br>
 
 ## 🏍️ Use Case
-
+[USE CASE 확인하기](https://github.com/JeonDaehong/daehong-food-delivery/wiki/USE-CASE)
 <br>
 <br>
 <br>
