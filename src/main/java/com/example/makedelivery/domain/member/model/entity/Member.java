@@ -21,6 +21,11 @@ import java.time.LocalDateTime;
  * private 사용시 Entity의 Proxy 조회 문제가 발생하기 때문입니다.
  * JPA에서는 Lazy 지연 로딩 방식을 권장하는데 이 때 객체가 Proxy 객체로 존재합니다.
  * 근데 Proxy 객체는 기존 Entity class를 상속 받아 만들어지므로, private 생성자면 상속받아 가져올 수가 없습니다.
+ * <br><br>
+ * 물론 아래 코드에서는 @ManyToOne(fetch = FetchType.LAZY) 과 같이 Entity 간의 매핑관계가 없어서
+ * 지연 로딩 되는 경우가 없기에, Private 으로 설정하여도 무관합니다.
+ * 다만, 앞으로 어떻게 될 지 모르기에, 그리고 레퍼런스 자체에서 Protected 를 권장하기에
+ * Protected 로 사용하였습니다.
  *
  */
 @Entity
