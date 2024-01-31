@@ -21,9 +21,4 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
     Optional<List<Coupon>> findByExpireDateTimeBeforeAndStatus(LocalDateTime currentTime, Status status);
 
-    // 낙관적 락
-    @Lock(LockModeType.OPTIMISTIC)
-    @Query("select c from Coupon c where c.id = :id and c.memberId = :memberId")
-    Optional<Coupon> findCouponByIdAndMemberIdOptimisticLock(Long id, Long memberId);
-
 }
