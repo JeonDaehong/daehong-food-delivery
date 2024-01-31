@@ -1,5 +1,6 @@
 package com.example.makedelivery.common.facade;
 
+import com.example.makedelivery.domain.coupon.service.CouponService;
 import com.example.makedelivery.domain.member.model.entity.Member;
 import com.example.makedelivery.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class RedissonLockFacade {
 
     private final RedissonClient redissonClient;
     private final MemberService memberService;
+    private final CouponService couponService;
 
     public void convertPointsToAvailablePoints(Member member, int desiredChangePoints) {
 
@@ -42,6 +44,29 @@ public class RedissonLockFacade {
             }
 
             memberService.convertPointsToAvailablePoints(member, desiredChangePoints);
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void useCoupon(Member member, Long couponId) {
+
+        RLock lock = redissonClient.getLock(member.getId().toString());
+
+        try {
+            // 락 획득 대기 시간 : 10초
+            // 실패 시 다음 락 시도까지 대기 시간 : 1초
+            boolean available = lock.tryLock(10, 1, TimeUnit.SECONDS);
+
+            if (!available) {
+                log.info("회원 고유 ID : " + member.getId() + " / 포인트 전환 Lock 획득 실패.");
+                return;
+            }
+
+            couponService.useCoupon(member, couponId);
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
