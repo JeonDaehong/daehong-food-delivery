@@ -64,9 +64,8 @@ public class CouponService {
     @Transactional
     public void applyCoupon(Long memberId, CouponType couponType, Capacity capacity) {
 
-        if ( couponRedisRepository.addMemberCoupon(memberId, couponType) != 1 ) {
-            throw new ApiException(COUPON_OVERLAB_ERROR); // 한 유저가 중복해서 받는 것을 방지
-        }
+        // if ( couponRepository.count() > capacity.getDescription() ) throw new ApiException(COUPON_END);
+
         if ( couponRedisRepository.incrementCouponCount(couponType) > capacity.getDescription() ) {
             throw new ApiException(COUPON_END);
         }
@@ -145,7 +144,7 @@ public class CouponService {
     @Transactional
     public void useCoupon(Member member, Long couponId) {
 
-        Coupon coupon = couponRepository.findCouponByIdAndMemberIdOptimisticLock(couponId, member.getId())
+        Coupon coupon = couponRepository.findCouponByIdAndMemberId(couponId, member.getId())
                 .orElseThrow( () -> new ApiException(COUPON_NOT_FOUND) );
 
         if ( coupon.getStatus().equals(Status.USED)) throw new ApiException(COUPON_ALREADY_USED); // 이미 사용한 쿠폰입니다.
