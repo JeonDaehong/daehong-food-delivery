@@ -50,7 +50,7 @@ public class StoreListApplicationDBTest {
     @DisplayName("주소가 저장되어있으면, 근처 10KM 이내의 매장을, 가까운 거리 순으로 가져옵니다. - DB, Redis 의 데이터로 직접 테스트")
     void getStoreListWithAddressTest() {
         // when
-        List<StoreResponse> storeResponseList = storeListService.getStoreListByCategory(memberWithAddress, 1L);
+        List<StoreResponse> storeResponseList = storeListService.getStoreListByCategory(1L, 1L);
         // then
         for ( int i=0; i<storeResponseList.size(); i++ ) {
             System.out.println("근처 매장 : " + storeResponseList.get(i));
@@ -61,7 +61,7 @@ public class StoreListApplicationDBTest {
     @DisplayName("주소가 저장되어 있지 않으면, 이름순으로 정렬하여 매장을 가져옵니다. - Redis 에 캐시 저장이 됩니다.")
     void getStoreListWithoutAddressTest() {
         // when
-        List<StoreResponse> storeResponseList = storeListService.getStoreListByCategory(memberWithoutAddress, 1L);
+        List<StoreResponse> storeResponseList = storeListService.getStoreListByCategory(1L, 1L);
         // then
         for ( int i=0; i<storeResponseList.size(); i++ ) {
             System.out.println("근처 매장 : " + storeResponseList.get(i));

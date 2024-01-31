@@ -62,6 +62,16 @@ public class RedisConfig {
     @Value("${spring.second-redis.data.redis.port}")
     private int cachePort;
 
+
+//    @Value("${spring.data.redis.host}")
+//    private String host;
+//
+//    @Value("${spring.data.redis.port}")
+//    private int port;
+//
+//    @Value("${spring.data.redis.password}")
+//    private String password;
+
     @Bean({"redisConnectionFactory", "redisSessionConnectionFactory"})
     @Primary
     public RedisConnectionFactory redisSessionConnectionFactory() {
@@ -88,14 +98,6 @@ public class RedisConfig {
         redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
         redisTemplate.setConnectionFactory(redisCacheConnectionFactory());
         return redisTemplate;
-    }
-
-    /**
-     * HashOperations Bean 설정
-     */
-    @Bean
-    public HashOperations<?, ?, ?> hashOperations(RedisTemplate<?, ?> redisTemplate) {
-        return redisTemplate.opsForHash();
     }
 
     /**

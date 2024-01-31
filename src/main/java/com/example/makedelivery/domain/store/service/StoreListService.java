@@ -44,17 +44,17 @@ public class StoreListService {
      * 캐시에 있는지 확인한 후, 있으면 캐시 메모리에서 가져오고, 없으면(Cache Miss) DB 에서 가져온 후 캐시에 저장합니다.
      * 이러한 방법을 캐시 전략에서 Look Aside 패턴이라고 합니다.
      */
-    @Cacheable(key = "'member:' + #member?.id + '-category:' + #categoryId", value = STORE_LIST, cacheManager = "redisCacheManager", condition = "#member != null")
+    @Cacheable(key = "'member:' + #memberId + '-category:' + #categoryId", value = STORE_LIST, cacheManager = "redisCacheManager", condition = "#memberId != null")
     @Transactional(readOnly = true)
-    public List<StoreResponse> getStoreListByCategory(Member member, Long categoryId) {
+    public List<StoreResponse> getStoreListByCategory(Long memberId, Long categoryId) {
 
         List<Store> stores;
 
-        if (member == null) {
+        if (memberId == null) {
             stores = storeRepository.findTop30ByCategoryIdOrderByName(categoryId).orElse(List.of());
         } else {
             stores = memberAddressRepository
-                    .findTopByStatusAndMemberIdOrderByPriorityAsc(MemberAddress.Status.DEFAULT, member.getId())
+                    .findTopByStatusAndMemberIdOrderByPriorityAsc(MemberAddress.Status.DEFAULT, memberId)
                     .map(memberAddress ->
                             storeRepository.findAllWithInDistanceInCategoryIdOrderByDistance(
                                             memberAddress.getLatitude(), memberAddress.getLongitude(), categoryId)

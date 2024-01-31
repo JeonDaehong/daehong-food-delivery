@@ -54,7 +54,7 @@ public class MemberRedisCacheRepository {
         List<String> keyList = new ArrayList<>();
 
         redisTemplate.execute((RedisCallback<List<String>>) redisConnection -> {
-            ScanOptions scanOptions = ScanOptions.scanOptions().match("*member:" + memberId + "*").count(100).build();
+            ScanOptions scanOptions = ScanOptions.scanOptions().match("*member:" + memberId + "*").count(10).build();
             // Redis 서버에서 모든 키를 스캔합니다.
             Cursor<byte[]> cursor = Objects.requireNonNull(redisTemplate.getConnectionFactory()).getConnection().scan(scanOptions);
             while (cursor.hasNext()) {
