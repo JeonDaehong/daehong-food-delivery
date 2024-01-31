@@ -32,9 +32,9 @@ public class StoreListController {
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<List<StoreResponse>> getStoreListByCategory(@RequestBody(required = false) Member member,
+    public ResponseEntity<List<StoreResponse>> getStoreListByCategory(@RequestParam(required = false) Long memberId,
                                                                       @PathVariable Long categoryId) {
-        List<StoreResponse> storeList = storeListService.getStoreListByCategory(member, categoryId);
+        List<StoreResponse> storeList = storeListService.getStoreListByCategory(memberId, categoryId);
         return ResponseEntity.status(HttpStatus.OK).body(storeList);
     }
 
